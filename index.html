@@ -9,5 +9,58 @@
   <body>
     <img src="src/assets/images/logo-codelytv-light.png" alt="CodelyTV" />
     <h1>Hello world!</h1>
+    <div id="renderCalendar"></div>
+
   </body>
+  <style>
+    /* Style for the container holding the calendar */
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border: 1px solid #ccc;
+      padding: 20px;
+      overflow: hidden; /* Hide any overflow */
+    }
+
+    /* Style for the sidebar */
+    .sidebar {
+      flex: 0 0 20%; /* Adjust the width of the sidebar */
+      background-color: #f2f2f2;
+      padding: 0 10px 10px;
+      overflow-y: auto; /* Enable vertical scrollbar if needed */
+    }
+
+    /* Style for the main box containing the days */
+    .mainBox {
+      flex: 0 0 75%; /* Adjust the width of the main box */
+      overflow-x: auto; /* Enable horizontal scrollbar */
+    }
+
+    /* Style for the row of days */
+    .row {
+      display: flex;
+      flex-wrap: nowrap; /* Prevent wrapping of days */
+      width: fit-content; /* Set width to fit content */
+    }
+
+    /* Style for individual day elements */
+    .day {
+      width: 50px; /* Ensure each day occupies an equal width */
+      border: 1px solid #ccc;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .task-header{
+      border-bottom: 1px solid #c7c7c7;
+    }
+    /* Style for task days */
+    .taskday {
+      background-color: #dff0d8; /* Change this to your desired task day color */
+      /* Additional styles for task days */
+    }
+
+
+  </style>
 </html>
