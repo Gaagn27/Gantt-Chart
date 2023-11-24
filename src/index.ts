@@ -23,18 +23,19 @@ function renderCalendar(containerId: string, tasks: Task[]): void {
 	container.classList.add("container");
 
 	const sideBar = createElement("div", "sidebar");
+	sideBar.id = "sidebar";
 	container.appendChild(sideBar);
 
 	const mainBox = createElement("div", "mainBox");
 	container.appendChild(mainBox);
-
+	mainBox.id = "mainBox";
 	// Render row with day numbers
 	const dateRange = getDateRange(tasks);
 	renderDayHeaders(mainBox, dateRange, true);
-
 	// Render rows highlighting task days
-	renderTaskRows(mainBox, tasks, dateRange);
+	renderTaskRows(mainBox, tasks);
 	renderTasksSidebar(sideBar, tasks);
+	drawLine(mainBox);
 }
 
 function getDateRange(tasks: Task[]): DateRange {
@@ -63,6 +64,7 @@ function renderDayHeaders(
 				"day",
 				`${current.getFullYear()}-${current.getMonth()}-${current.getDate().toString()}`
 			);
+			row.id = "dateHeader";
 			column.id = `${current.getTime()}`;
 		} else {
 			column = createElement("div", "day");
@@ -73,31 +75,55 @@ function renderDayHeaders(
 
 	container.appendChild(row);
 }
+function drawLine(container: HTMLElement) {
+	const canvas = createElement("div", "column-lines-canvas");
+	canvas.style.width = `${String(container.offsetWidth + container.offsetLeft)}px`;
+	// Get all elements with the class name 'day' within the 'dateHeader' ID
+	const dayElements = document.querySelectorAll("#dateHeader .day");
 
-function renderTaskRows(container: HTMLElement, tasks: Task[], dateRange: DateRange) {
+	// Loop through each 'day' element
+	dayElements.forEach((dayElement) => {
+		const line = createElement("div", "column-line");
+		const day = document.getElementById(dayElement.id);
+		if (day) {
+			line.style.transform = `translateX(${day.offsetLeft}px)`;
+			line.style.color = `red`;
+		}
+		// console.log(line)
+		canvas.appendChild(line);
+	});
+	container.appendChild(canvas);
+	const sidebar = document.getElementById("sidebar");
+	container.style.height = "100%";
+}
+function renderTaskRows(container: HTMLElement, tasks: Task[]) {
 	tasks.forEach((task) => {
-		renderDayHeaders(container, dateRange);
+		const row = createElement("div", "task-row");
+		const taskBox = createElement("div", "task-box", "");
+
+		row.style.width = `${String(container.offsetWidth + container.offsetLeft)}px`;
+		taskBox.style.position = "absolute";
+		const leftBox = document.getElementById(Date.parse(task.start).toString());
+		const leftCords = leftBox?.offsetLeft;
+		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft;
+		// eslint-disable-next-line eqeqeq
+		if (leftCords != null && rightBox != null) {
+			taskBox.style.left = `${leftCords}px`;
+			taskBox.style.width = `${rightBox - leftCords + 50}px`;
+			taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
+			row.appendChild(taskBox);
+		}
+		container.appendChild(row);
 	});
 }
 function renderTasksSidebar(container: HTMLElement, tasks: Task[]) {
 	const taskHeader = createElement("div", "task-header", "Tasks");
 	container.appendChild(taskHeader);
+
 	tasks.forEach((task) => {
-		const taskSide = createElement("div", "task", task.name);
+		const taskSide = createElement("div", "task-row", task.name);
 		taskSide.id = `task-side${task.name}`;
 		container.appendChild(taskSide);
-		const taskBox = createElement("div", "task-box", "");
-		taskBox.style.position = "absolute";
-		const leftBox = document.getElementById(Date.parse(task.start).toString());
-		taskHeader.style.height = `${leftBox?.offsetHeight}px`;
-		const leftCords = leftBox?.offsetLeft;
-		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft;
-		if (leftCords && rightBox) {
-			taskBox.style.left = `${leftCords}px`;
-			taskBox.style.width = `${rightBox - leftCords}px`;
-			taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
-			container.appendChild(taskBox);
-		}
 	});
 }
 

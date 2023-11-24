@@ -35,6 +35,8 @@
     .mainBox {
       flex: 0 0 75%; /* Adjust the width of the main box */
       overflow-x: auto; /* Enable horizontal scrollbar */
+      position:relative;
+
     }
 
     /* Style for the row of days */
@@ -60,7 +62,32 @@
       background-color: #dff0d8; /* Change this to your desired task day color */
       /* Additional styles for task days */
     }
-
-
+    .column-lines-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      height: 100%;
+      overflow: hidden;
+      overflow: clip;
+      contain: strict;
+    }
+    .column-line{
+      height: 100%;
+      position: absolute;
+      border-left: 1px solid #c7c7c7;
+    }
+    .task-row{
+      height: 46px;
+      border-bottom: 1px solid #c7c7c7;
+    }
+    .task-header,#dateHeader{
+      height: 76px;
+    }
+    .task-box{
+      height:20px;
+      background-color: #062d41;
+      margin-top: 15px;
+    }
   </style>
 </html>
