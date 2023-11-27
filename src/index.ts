@@ -1,7 +1,7 @@
 import { DateRange } from "./inerfaces/date/DateRange";
 import { Task } from "./inerfaces/Task";
-import { getEarliestDate, getLatestDate } from "./libs/Date/Date";
-import { createElement } from "./libs/HtmlElement/HtmlHelper";
+import { getDateRange } from "./libs/Date/Date";
+import { createElement,getElementFullWidth } from "./libs/HtmlElement/HtmlHelper";
 
 //
 // eslint-disable-next-line no-use-before-define
@@ -38,16 +38,6 @@ function renderCalendar(containerId: string, tasks: Task[]): void {
 	drawLine(mainBox);
 }
 
-function getDateRange(tasks: Task[]): DateRange {
-	const earliest = getEarliestDate(tasks);
-	const latest = getLatestDate(tasks);
-
-	return {
-		start: earliest,
-		end: latest,
-	};
-}
-
 function renderDayHeaders(
 	container: HTMLElement,
 	{ start, end }: DateRange,
@@ -72,15 +62,13 @@ function renderDayHeaders(
 		row.appendChild(column);
 		current = nextDay(current);
 	}
-
 	container.appendChild(row);
 }
 function drawLine(container: HTMLElement) {
 	const canvas = createElement("div", "column-lines-canvas");
-	canvas.style.width = `${String(container.offsetWidth + container.offsetLeft)}px`;
+	canvas.style.width = `${String(getElementFullWidth(container))}px`;
 	// Get all elements with the class name 'day' within the 'dateHeader' ID
 	const dayElements = document.querySelectorAll("#dateHeader .day");
-
 	// Loop through each 'day' element
 	dayElements.forEach((dayElement) => {
 		const line = createElement("div", "column-line");
@@ -97,12 +85,18 @@ function drawLine(container: HTMLElement) {
 	container.style.height = "100%";
 }
 function renderTaskRows(container: HTMLElement, tasks: Task[]) {
+
 	tasks.forEach((task) => {
 		const row = createElement("div", "task-row");
 		const taskBox = createElement("div", "task-box", "");
 
-		row.style.width = `${String(container.offsetWidth + container.offsetLeft)}px`;
+		row.style.width = `${String(getElementFullWidth(container))}px`;
 		taskBox.style.position = "absolute";
+		const tooltip = createElement("div", "task-box-text");
+		tooltip.innerHTML = `<h6>${task.name}</h2>
+							<span><strong>Start</strong> ${task.start}</span>
+							<span><strong>End</strong> ${task.end}</span>`;
+		taskBox.appendChild(tooltip);
 		const leftBox = document.getElementById(Date.parse(task.start).toString());
 		const leftCords = leftBox?.offsetLeft;
 		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft;
