@@ -8,3 +8,14 @@ export function createElement(tag: string, className: string, content?: string):
 
 	return el;
 }
+
+export function getElementFullWidth(element: HTMLElement): number {
+	const computedStyle = window.getComputedStyle(element);
+
+	return Math.max(
+		element.scrollWidth,
+		element.offsetWidth,
+		element.clientWidth,
+		parseFloat(computedStyle.width)
+	);
+}
