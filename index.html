@@ -140,12 +140,13 @@
     .modal {
       display: none;
       position: fixed;
+      min-width: 500px;
       z-index: 1000;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
       background-color: white;
-      padding: 20px;
+      padding: 5px 20px 20px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
@@ -159,6 +160,81 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: 999;
+    }
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center; /* Align items vertically at the center */
+    }
+
+    .task-header p, .task-header button {
+      margin: 0; /* Reset margins for paragraph and anchor */
+      padding: 5px 10px; /* Add padding as needed */
+      text-decoration: none; /* Remove underline from anchor */
+      color: #333; /* Set text color */
+    }
+
+    .task-header button {
+      margin-left: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
+      padding: 5px 15px;
+      margin-right: 30px;
+      text-transform: capitalize;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      margin-top: 10px;
+    }
+
+    /* Modal title */
+    .modal-title {
+      margin: 0;
+    }
+
+    /* Close button */
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+    .btn {
+      background-color: #4c6e97;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .btn:hover {
+      background-color: #3b5177;
+      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     }
   </style>
 </html>

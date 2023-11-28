@@ -1,7 +1,7 @@
 import { DateRange } from "./inerfaces/date/DateRange";
 import { Task } from "./inerfaces/Task";
 import { getDateRange } from "./libs/Date/Date";
-import { createElement,getElementFullWidth } from "./libs/HtmlElement/HtmlHelper";
+import { createElement, getElementFullWidth } from "./libs/HtmlElement/HtmlHelper";
 
 //
 // eslint-disable-next-line no-use-before-define
@@ -12,6 +12,42 @@ function isTaskDay(date: Date, tasks: Task[]): boolean {
 
 		return date >= taskStart && date <= taskEnd;
 	});
+}
+function openModal(): void {
+	const modal: HTMLElement = createElement("div", "modal");
+	modal.id = "modal";
+	const modalHeader: HTMLElement = createElement("div", "modal-header");
+	const modalBody: HTMLElement = createElement("div", "modal-body");
+	const modalFooter: HTMLElement = createElement("div", "modal-footer");
+	const modalHeaderLabel: HTMLElement = createElement("div", "modal-title", "this id modal");
+	const closeButton: HTMLElement = createElement("span", "close", "X");
+	const save: HTMLElement = createElement("button", "btn", "save");
+	closeButton.innerHTML = "&times;";
+	modal.appendChild(modalHeader);
+	modalHeader.appendChild(modalHeaderLabel);
+	modalHeader.appendChild(closeButton);
+	modal.appendChild(modalBody);
+	modalFooter.appendChild(save);
+	modal.appendChild(modalFooter);
+	document.body.appendChild(modal);
+
+	const overlay: HTMLElement = createElement("div", "overlay");
+	overlay.id = "overlay";
+	document.body.appendChild(overlay);
+	modal.style.display = "block";
+	overlay.style.display = "block";
+
+	overlay.addEventListener("click", closeModal);
+	closeButton.addEventListener("click", closeModal);
+}
+
+function closeModal() {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	document.getElementById("modal").remove();
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	document.getElementById("overlay").remove();
 }
 // Render calendar
 function renderCalendar(containerId: string, tasks: Task[]): void {
@@ -85,7 +121,6 @@ function drawLine(container: HTMLElement) {
 	container.style.height = "100%";
 }
 function renderTaskRows(container: HTMLElement, tasks: Task[]) {
-
 	tasks.forEach((task) => {
 		const row = createElement("div", "task-row");
 		const taskBox = createElement("div", "task-box", "");
@@ -110,10 +145,16 @@ function renderTaskRows(container: HTMLElement, tasks: Task[]) {
 		container.appendChild(row);
 	});
 }
-function renderTasksSidebar(container: HTMLElement, tasks: Task[]) {
-	const taskHeader = createElement("div", "task-header", "Tasks");
-	container.appendChild(taskHeader);
 
+//  {
+// }
+function renderTasksSidebar(container: HTMLElement, tasks: Task[]) {
+	const taskHeader = createElement("div", "task-header");
+	container.appendChild(taskHeader);
+	const btn = createElement("button", "addTask", "Add Task");
+	btn.addEventListener("click", openModal);
+	taskHeader.appendChild(createElement("p", "task-label", "Tasks"));
+	taskHeader.appendChild(btn);
 	tasks.forEach((task) => {
 		const taskSide = createElement("div", "task-row", task.name);
 		taskSide.id = `task-side${task.name}`;
