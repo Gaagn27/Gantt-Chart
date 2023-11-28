@@ -2,6 +2,9 @@ import { DateRange } from "./inerfaces/date/DateRange";
 import { Task } from "./inerfaces/Task";
 import { getDateRange } from "./libs/Date/Date";
 import { createElement, getElementFullWidth } from "./libs/HtmlElement/HtmlHelper";
+import {Input} from "./inerfaces/html/Input";
+import {createInputElement} from "./libs/HtmlElement/InputHelper";
+import {ChartConfigs} from "./inerfaces/ChartConfigs";
 
 //
 // eslint-disable-next-line no-use-before-define
@@ -13,7 +16,7 @@ function isTaskDay(date: Date, tasks: Task[]): boolean {
 		return date >= taskStart && date <= taskEnd;
 	});
 }
-function openModal(): void {
+function renderModal(elements: Input[]) {
 	const modal: HTMLElement = createElement("div", "modal");
 	modal.id = "modal";
 	const modalHeader: HTMLElement = createElement("div", "modal-header");
@@ -30,27 +33,43 @@ function openModal(): void {
 	modalFooter.appendChild(save);
 	modal.appendChild(modalFooter);
 	document.body.appendChild(modal);
+	elements.forEach((element) => {
+		modalBody.appendChild(createInputElement(element));
+	});
 
 	const overlay: HTMLElement = createElement("div", "overlay");
 	overlay.id = "overlay";
 	document.body.appendChild(overlay);
-	modal.style.display = "block";
-	overlay.style.display = "block";
-
 	overlay.addEventListener("click", closeModal);
 	closeButton.addEventListener("click", closeModal);
 }
+function openModal(): void {
+	const modal = document.getElementById("modal");
+	const overlay = document.getElementById("overlay");
+	if (modal) {
+		modal.style.display = "block";
+	}
+	if (overlay) {
+		overlay.style.display = "block";
+	}
+}
 
 function closeModal() {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	document.getElementById("modal").remove();
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	document.getElementById("overlay").remove();
+	const modal = document.getElementById("modal");
+	const overlay = document.getElementById("overlay");
+	if (modal) {
+		modal.style.display = "none";
+	}
+	if (overlay) {
+		overlay.style.display = "none";
+	}
 }
+
 // Render calendar
-function renderCalendar(containerId: string, tasks: Task[]): void {
+function renderCalendar(configs: ChartConfigs): void {
+	const containerId: string = configs.id;
+	const tasks: Task[] = configs.tasks;
+	const createUpdateForm: Input[] = configs.formConfigs;
 	const container = document.getElementById(containerId);
 	if (!container) {
 		return;
@@ -72,6 +91,7 @@ function renderCalendar(containerId: string, tasks: Task[]): void {
 	renderTaskRows(mainBox, tasks);
 	renderTasksSidebar(sideBar, tasks);
 	drawLine(mainBox);
+	renderModal(createUpdateForm);
 }
 
 function renderDayHeaders(
@@ -168,7 +188,31 @@ function nextDay(date: Date): Date {
 
 	return next;
 }
-renderCalendar("renderCalendar", [
-	{ name: "Task 1", start: "2023-11-01", end: "2023-11-05" },
-	{ name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
-]);
+renderCalendar({
+	id: "renderCalendar",
+	tasks: [
+		{ name: "Task 1", start: "2023-11-01", end: "2023-11-05" },
+		{ name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
+	],
+	formConfigs: [
+		{
+			name: "name",
+			type: "text",
+			label: "Project Name",
+			placeholder: "Project Name",
+			class: "Project",
+		},
+		{
+			name: "start",
+			type: "date",
+			label: "Project Start Date",
+			class: "Project",
+		},
+		{
+			name: "end",
+			type: "date",
+			label: "Project End Date",
+			class: "Project",
+		},
+	],
+});
