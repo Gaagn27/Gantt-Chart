@@ -1,10 +1,9 @@
-import { DateRange } from "./inerfaces/date/DateRange";
+import { ChartConfigs } from "./inerfaces/ChartConfigs";
+import { Input } from "./inerfaces/html/Input";
 import { Task } from "./inerfaces/Task";
-import { getDateRange } from "./libs/Date/Date";
-import { createElement, getElementFullWidth } from "./libs/HtmlElement/HtmlHelper";
-import {Input} from "./inerfaces/html/Input";
-import {createInputElement} from "./libs/HtmlElement/InputHelper";
-import {ChartConfigs} from "./inerfaces/ChartConfigs";
+import { Calender } from "./libs/HtmlElement/Calender";
+import { createElement } from "./libs/HtmlElement/HtmlHelper";
+import { createInputElement } from "./libs/HtmlElement/InputHelper";
 
 //
 // eslint-disable-next-line no-use-before-define
@@ -85,89 +84,14 @@ function renderCalendar(configs: ChartConfigs): void {
 	container.appendChild(mainBox);
 	mainBox.id = "mainBox";
 	// Render row with day numbers
-	const dateRange = getDateRange(tasks);
-	renderDayHeaders(mainBox, dateRange, true);
-	// Render rows highlighting task days
-	renderTaskRows(mainBox, tasks);
+	const calendar: Calender = new Calender(mainBox, tasks);
+	calendar.renderDayHeaders();
+	calendar.renderTaskRows();
+	calendar.drawLine();
 	renderTasksSidebar(sideBar, tasks);
-	drawLine(mainBox);
 	renderModal(createUpdateForm);
 }
 
-function renderDayHeaders(
-	container: HTMLElement,
-	{ start, end }: DateRange,
-	isHeader = false
-): void {
-	const row = createElement("div", "row");
-
-	let current: Date = start;
-	while (current <= end) {
-		let column;
-		if (isHeader) {
-			column = createElement(
-				"div",
-				"day",
-				`${current.getFullYear()}-${current.getMonth()}-${current.getDate().toString()}`
-			);
-			row.id = "dateHeader";
-			column.id = `${current.getTime()}`;
-		} else {
-			column = createElement("div", "day");
-		}
-		row.appendChild(column);
-		current = nextDay(current);
-	}
-	container.appendChild(row);
-}
-function drawLine(container: HTMLElement) {
-	const canvas = createElement("div", "column-lines-canvas");
-	canvas.style.width = `${String(getElementFullWidth(container))}px`;
-	// Get all elements with the class name 'day' within the 'dateHeader' ID
-	const dayElements = document.querySelectorAll("#dateHeader .day");
-	// Loop through each 'day' element
-	dayElements.forEach((dayElement) => {
-		const line = createElement("div", "column-line");
-		const day = document.getElementById(dayElement.id);
-		if (day) {
-			line.style.transform = `translateX(${day.offsetLeft}px)`;
-			line.style.color = `red`;
-		}
-		// console.log(line)
-		canvas.appendChild(line);
-	});
-	container.appendChild(canvas);
-	const sidebar = document.getElementById("sidebar");
-	container.style.height = "100%";
-}
-function renderTaskRows(container: HTMLElement, tasks: Task[]) {
-	tasks.forEach((task) => {
-		const row = createElement("div", "task-row");
-		const taskBox = createElement("div", "task-box", "");
-
-		row.style.width = `${String(getElementFullWidth(container))}px`;
-		taskBox.style.position = "absolute";
-		const tooltip = createElement("div", "task-box-text");
-		tooltip.innerHTML = `<h6>${task.name}</h2>
-							<span><strong>Start</strong> ${task.start}</span>
-							<span><strong>End</strong> ${task.end}</span>`;
-		taskBox.appendChild(tooltip);
-		const leftBox = document.getElementById(Date.parse(task.start).toString());
-		const leftCords = leftBox?.offsetLeft;
-		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft;
-		// eslint-disable-next-line eqeqeq
-		if (leftCords != null && rightBox != null) {
-			taskBox.style.left = `${leftCords}px`;
-			taskBox.style.width = `${rightBox - leftCords + 50}px`;
-			taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
-			row.appendChild(taskBox);
-		}
-		container.appendChild(row);
-	});
-}
-
-//  {
-// }
 function renderTasksSidebar(container: HTMLElement, tasks: Task[]) {
 	const taskHeader = createElement("div", "task-header");
 	container.appendChild(taskHeader);
@@ -215,4 +139,7 @@ renderCalendar({
 			class: "Project",
 		},
 	],
+	configs:{
+
+	}
 });

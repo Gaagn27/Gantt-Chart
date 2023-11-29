@@ -50,3 +50,9 @@ export function getDateRange(tasks: Task[]): DateRange {
 		end: latest,
 	};
 }
+export function nextDay(date: Date): Date {
+	const next = new Date(date);
+	next.setDate(date.getDate() + 1);
+
+	return next;
+}
