@@ -3,16 +3,22 @@ import { getDateRange, nextDay } from "../Date/Date";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
 
 export class Calender {
-	private readonly _task: Task[];
+	private _tasks: Task[];
 	private readonly _container: HTMLElement;
-	constructor(container: HTMLElement, task: Task[]) {
-		this._task = task;
+	constructor(container: HTMLElement, tasks: Task[]) {
+		this._tasks = tasks;
 		this._container = container;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+	public updateTasks(tasks: Task[]) {
+		this._tasks = tasks;
+		this.renderTaskRows();
 	}
 
 	public renderDayHeaders(): void {
 		const row = createElement("div", "row");
-		const { start, end } = getDateRange(this._task);
+		const { start, end } = getDateRange(this._tasks);
 		let current: Date = start;
 		while (current <= end) {
 			const column = createElement(
@@ -51,7 +57,7 @@ export class Calender {
 	}
 
 	public renderTaskRows(): void {
-		this._task.forEach((task) => {
+		this._tasks.forEach((task) => {
 			const row = createElement("div", "task-row");
 			const taskBox = createElement("div", "task-box", "");
 
