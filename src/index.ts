@@ -1,5 +1,5 @@
 import { ChartConfigs } from "./inerfaces/ChartConfigs";
-import { Input } from "./inerfaces/html/Input";
+import { ModalConfigs } from "./inerfaces/html/ModalConfigs";
 import { Task } from "./inerfaces/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
@@ -15,7 +15,7 @@ function isTaskDay(date: Date, tasks: Task[]): boolean {
 		return date >= taskStart && date <= taskEnd;
 	});
 }
-function renderModal(elements: Input[]) {
+function renderModal(configs: ModalConfigs) {
 	const modal: HTMLElement = createElement("div", "modal");
 	modal.id = "modal";
 	const modalHeader: HTMLElement = createElement("div", "modal-header");
@@ -23,7 +23,8 @@ function renderModal(elements: Input[]) {
 	const modalFooter: HTMLElement = createElement("div", "modal-footer");
 	const modalHeaderLabel: HTMLElement = createElement("div", "modal-title", "this id modal");
 	const closeButton: HTMLElement = createElement("span", "close", "X");
-	const save: HTMLElement = createElement("button", "btn", "save");
+	const save: HTMLElement = createElement("button", "btn", "Add Task");
+	save.id = "addTask";
 	closeButton.innerHTML = "&times;";
 	modal.appendChild(modalHeader);
 	modalHeader.appendChild(modalHeaderLabel);
@@ -32,10 +33,10 @@ function renderModal(elements: Input[]) {
 	modalFooter.appendChild(save);
 	modal.appendChild(modalFooter);
 	document.body.appendChild(modal);
+	const elements = configs.inputs;
 	elements.forEach((element) => {
 		modalBody.appendChild(createInputElement(element));
 	});
-
 	const overlay: HTMLElement = createElement("div", "overlay");
 	overlay.id = "overlay";
 	document.body.appendChild(overlay);
@@ -63,12 +64,17 @@ function closeModal() {
 		overlay.style.display = "none";
 	}
 }
-
 // Render calendar
+let rendered = false;
 function renderCalendar(configs: ChartConfigs): void {
+	if (rendered) {
+		return;
+	}
+
+	rendered = true;
 	const containerId: string = configs.id;
+	// emptyChildElements(containerId);
 	const tasks: Task[] = configs.tasks;
-	const createUpdateForm: Input[] = configs.formConfigs;
 	const container = document.getElementById(containerId);
 	if (!container) {
 		return;
@@ -89,7 +95,27 @@ function renderCalendar(configs: ChartConfigs): void {
 	calendar.renderTaskRows();
 	calendar.drawLine();
 	renderTasksSidebar(sideBar, tasks);
-	renderModal(createUpdateForm);
+
+	renderModal(configs.modalConfigs);
+	const addTask = document.getElementById("addTask");
+	if (addTask) {
+		addTask.addEventListener("click", () => {
+			const elementsToRemove = document.querySelectorAll(".task-row");
+
+			elementsToRemove.forEach((element) => {
+				element.remove();
+			});
+			const mainBox = document.getElementById("mainBox");
+			configs.tasks.push({ name: "Task 3", start: "2023-11-06", end: "2023-12-01" });
+			console.log(configs.tasks);
+			calendar.updateTasks(configs.tasks);
+			if (mainBox) {
+				// if (configs.addTask) {
+				// 	configs.addTask({ name: "Task 3", start: "2023-10-06", end: "2023-11-01" });
+				// }
+			}
+		});
+	}
 }
 
 function renderTasksSidebar(container: HTMLElement, tasks: Task[]) {
@@ -112,34 +138,38 @@ function nextDay(date: Date): Date {
 
 	return next;
 }
+const tasks = [
+	{ name: "Task 1", start: "2023-11-01", end: "2023-11-05" },
+	{ name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
+];
 renderCalendar({
 	id: "renderCalendar",
-	tasks: [
-		{ name: "Task 1", start: "2023-11-01", end: "2023-11-05" },
-		{ name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
-	],
-	formConfigs: [
-		{
-			name: "name",
-			type: "text",
-			label: "Project Name",
-			placeholder: "Project Name",
-			class: "Project",
-		},
-		{
-			name: "start",
-			type: "date",
-			label: "Project Start Date",
-			class: "Project",
-		},
-		{
-			name: "end",
-			type: "date",
-			label: "Project End Date",
-			class: "Project",
-		},
-	],
-	configs:{
-
-	}
+	tasks,
+	modalConfigs: {
+		addTask,
+		inputs: [
+			{
+				name: "name",
+				type: "text",
+				label: "Project Name",
+				placeholder: "Project Name",
+				class: "Project",
+			},
+			{
+				name: "start",
+				type: "date",
+				label: "Project Start Date",
+				class: "Project",
+			},
+			{
+				name: "end",
+				type: "date",
+				label: "Project End Date",
+				class: "Project",
+			},
+		],
+	},
 });
+function addTask(task: Task) {
+	// tasks.push(task);
+}
