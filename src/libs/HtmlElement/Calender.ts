@@ -1,20 +1,9 @@
-import { Task } from "../../inerfaces/Task";
 import { getDateRange, nextDay } from "../Date/Date";
+import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
 
-export class Calender {
-	private _tasks: Task[];
-	private readonly _container: HTMLElement;
-	constructor(container: HTMLElement, tasks: Task[]) {
-		this._tasks = tasks;
-		this._container = container;
-	}
-
+export class Calender extends GanttChart {
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	public updateTasks(tasks: Task[]) {
-		this._tasks = tasks;
-		this.renderTaskRows();
-	}
 
 	public renderDayHeaders(): void {
 		const row = createElement("div", "row");
@@ -24,7 +13,9 @@ export class Calender {
 			const column = createElement(
 				"div",
 				"day",
-				`${current.getFullYear()}-${current.getMonth()}-${current.getDate().toString()}`
+				`${current.getFullYear()}\n${current.toLocaleString("en", { month: "short" })}\n${current
+					.getDate()
+					.toString()}`
 			);
 
 			row.id = "dateHeader";
@@ -60,7 +51,9 @@ export class Calender {
 		this._tasks.forEach((task) => {
 			const row = createElement("div", "task-row");
 			const taskBox = createElement("div", "task-box", "");
-
+			if (task.uid) {
+				taskBox.setAttribute("data-uid", task.uid);
+			}
 			row.style.width = `${String(getElementFullWidth(this._container))}px`;
 			taskBox.style.position = "absolute";
 			const tooltip = createElement("div", "task-box-text");
