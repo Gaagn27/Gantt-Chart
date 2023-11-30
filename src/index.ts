@@ -17,8 +17,8 @@ function isTaskDay(date: Date, tasks: Task[]): boolean {
 	});
 }
 function generateRandomId(length=16): string {
-	const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	let id = '';
+	const alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	let id = "";
 
 	for (let i = 0; i < length; i++) {
 		const randomIndex = Math.floor(Math.random() * alphanumeric.length);
@@ -72,6 +72,11 @@ function renderCalendar(configs: ChartConfigs): void {
 			configs.tasks.push(task);
 			calendar.updateTasks(configs.tasks);
 			sidebar.updateTasks(configs.tasks);
+			Modal.closeModal();
+			const form = document.querySelector("form#taskForm") as HTMLFormElement | null;
+			if (form) {
+				form.reset();
+			}
 			if (mainBox) {
 				if (configs.modalConfigs.addTask) {
 					configs.modalConfigs.addTask(task);

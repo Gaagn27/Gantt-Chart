@@ -1,6 +1,7 @@
 import { getDateRange, nextDay } from "../Date/Date";
 import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
+import {Modal} from "./Modal";
 
 export class Calender extends GanttChart {
 	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -72,6 +73,17 @@ export class Calender extends GanttChart {
 				row.appendChild(taskBox);
 			}
 			this._container.appendChild(row);
+			taskBox.addEventListener("click", () => {
+				const form = document.getElementById("taskForm") as HTMLFormElement;
+
+				for (const taskKey in task) {
+					const input = form.elements.namedItem(taskKey);
+					if (input) {
+						(input as HTMLInputElement).value = task[taskKey];
+					}
+				}
+				Modal.openModal();
+			});
 		});
 	}
 }
