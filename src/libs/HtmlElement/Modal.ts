@@ -31,6 +31,7 @@ export class Modal {
 		modal.id = "modal";
 		const modalHeader: HTMLElement = createElement("div", "modal-header");
 		const modalBody: HTMLElement = createElement("div", "modal-body");
+		const taskForm: HTMLElement = createElement("form", "task-form");
 		const modalFooter: HTMLElement = createElement("div", "modal-footer");
 		const modalHeaderLabel: HTMLElement = createElement("div", "modal-title", "this id modal");
 		const closeButton: HTMLElement = createElement("span", "close", "X");
@@ -45,7 +46,8 @@ export class Modal {
 		modal.appendChild(modalFooter);
 		document.body.appendChild(modal);
 		const elements = configs.inputs;
-		this._createInputs(modalBody, elements);
+		taskForm.id = "taskForm";
+		this._createInputs(modalBody.appendChild(taskForm), elements);
 		const overlay: HTMLElement = createElement("div", "overlay");
 		overlay.id = "overlay";
 		document.body.appendChild(overlay);
