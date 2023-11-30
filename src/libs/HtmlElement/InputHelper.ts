@@ -42,9 +42,13 @@ export function createInputElement(input: Input): HTMLElement {
 				htmlElement.classList.add(className);
 			});
 		}
-		// htmlElement.setAttribute("class", input.class);
 	}
 	wrap.appendChild(htmlElement);
 
 	return wrap;
+}
+export function inputValue(name: string): string | null {
+	const nameInput = document.querySelector(`input[name='${name}']`) as HTMLInputElement | null;
+
+	return nameInput ? nameInput.value : null;
 }
