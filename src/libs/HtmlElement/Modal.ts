@@ -13,11 +13,22 @@ export class Modal {
 		if (overlay) {
 			overlay.style.display = "block";
 		}
+		const uid = document.querySelector("input[name='_uid']");
+		if (uid) {
+			const addTask = document.getElementById("addTask") as HTMLElement;
+			addTask.innerText = "Update";
+		}
 	}
 
 	public static closeModal(): void {
+		const addTask = document.getElementById("addTask") as HTMLElement;
+		addTask.innerText = "Create";
 		const modal = document.getElementById("modal");
 		const overlay = document.getElementById("overlay");
+		const uid = document.querySelector("input[name='_uid']");
+		if (uid) {
+			uid.remove();
+		}
 		if (modal) {
 			modal.style.display = "none";
 		}
@@ -35,7 +46,7 @@ export class Modal {
 		const modalFooter: HTMLElement = createElement("div", "modal-footer");
 		const modalHeaderLabel: HTMLElement = createElement("div", "modal-title", "this id modal");
 		const closeButton: HTMLElement = createElement("span", "close", "X");
-		const save: HTMLElement = createElement("button", "btn", "Add Task");
+		const save: HTMLElement = createElement("button", "btn", "Create");
 		save.id = "addTask";
 		closeButton.innerHTML = "&times;";
 		modal.appendChild(modalHeader);

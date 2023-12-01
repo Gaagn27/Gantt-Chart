@@ -73,10 +73,8 @@ function renderCalendar(configs: ChartConfigs): void {
 			calendar.updateTasks(configs.tasks);
 			sidebar.updateTasks(configs.tasks);
 			Modal.closeModal();
-			const form = document.querySelector("form#taskForm") as HTMLFormElement | null;
-			if (form) {
-				form.reset();
-			}
+			const form = document.querySelector("form#taskForm") as HTMLFormElement;
+			form.reset();
 			if (mainBox) {
 				if (configs.modalConfigs.addTask) {
 					configs.modalConfigs.addTask(task);
