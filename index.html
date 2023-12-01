@@ -262,5 +262,36 @@
       outline: none;
       border-color: #3b99fc;
     }
+    .task-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 10px;
+      background: transparent;
+      z-index: 1; /* Ensure the overlay is above other content */
+    }
+    .task-box:hover::before {
+      background: rgba(0, 0, 0, 0.1); /* Change the background to show the hover area */
+    }
+    .box-modifier {
+      width: 0;
+      transition: width 0.3s; /* Optional: Adding transition for a smoother effect */
+      overflow: hidden;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #575787; /* Change this to the desired color */
+      z-index: 2; /* Ensure the .box-modifier is above the overlay */
+    }
+
+    .task-box:hover .box-modifier {
+      width: 3px;
+    }
+    .box-modifier:hover{
+      cursor: col-resize;
+    }
   </style>
 </html>
