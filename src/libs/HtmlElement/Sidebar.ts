@@ -8,7 +8,14 @@ export class Sidebar extends GanttChart {
 		const taskHeader = createElement("div", "task-header");
 		this._container.appendChild(taskHeader);
 		const btn = createElement("button", "addTask", "Add Task");
-		btn.addEventListener("click", () => Modal.openModal());
+		btn.addEventListener("click", () => {
+			const form = document.querySelector("form#taskForm") as HTMLFormElement | null;
+			if (form) {
+				form.reset();
+			}
+			Modal.openModal();
+		});
+
 		taskHeader.appendChild(createElement("p", "task-label", "Tasks"));
 		taskHeader.appendChild(btn);
 		this.renderTaskRows();
