@@ -69,7 +69,18 @@ function renderCalendar(configs: ChartConfigs): void {
 				end: inputValue("end") ?? "",
 				uid: generateRandomId(),
 			};
-			configs.tasks.push(task);
+			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | null;
+			if (uid) {
+				configs.tasks = configs.tasks.map((taskObj) => {
+					if (taskObj.uid === uid.value) {
+						return task;
+					}
+
+					return taskObj;
+				});
+			} else {
+				configs.tasks.push(task);
+			}
 			calendar.updateTasks(configs.tasks);
 			sidebar.updateTasks(configs.tasks);
 			Modal.closeModal();
@@ -78,6 +89,9 @@ function renderCalendar(configs: ChartConfigs): void {
 			if (mainBox) {
 				if (configs.modalConfigs.addTask) {
 					configs.modalConfigs.addTask(task);
+				}
+				if (configs.modalConfigs.updateTask) {
+					configs.modalConfigs.updateTask(task);
 				}
 			}
 		});
@@ -117,5 +131,5 @@ renderCalendar({
 	},
 });
 function addTask(task: Task) {
-	console.log(task);
+	console.log(task,'for user');
 }
