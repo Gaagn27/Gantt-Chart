@@ -1,4 +1,4 @@
-import { Task } from "../../inerfaces/Task";
+import { Task } from "../Task";
 import { GanttChart } from "./GanttChart";
 import { createElement } from "./HtmlHelper";
 import { Modal } from "./Modal";
@@ -28,17 +28,7 @@ export class Sidebar extends GanttChart {
 				taskSide.id = `task-side-${task.uid}`;
 				taskSide.setAttribute("data-uid", task.uid);
 			}
-			taskSide.addEventListener("click", () => {
-				const form = document.getElementById("taskForm") as HTMLFormElement;
-
-				for (const taskKey in task) {
-					const input = form.elements.namedItem(taskKey);
-					if (input) {
-						(input as HTMLInputElement).value = task[taskKey];
-					}
-				}
-				Modal.openModal();
-			});
+			taskSide.addEventListener("click", () => new Task().edit(task));
 			this._container.appendChild(taskSide);
 		});
 	}
