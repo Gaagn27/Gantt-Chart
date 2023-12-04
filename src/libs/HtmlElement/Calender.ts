@@ -5,8 +5,6 @@ import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
 
 export class Calender extends GanttChart {
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-
 	public renderDayHeaders(): void {
 		const row = createElement("div", "row");
 		const { start, end } = getDateRange(this._tasks);
@@ -51,7 +49,7 @@ export class Calender extends GanttChart {
 
 	public renderTaskRows(): void {
 		this._tasks.forEach((task) => {
-			const row = createElement("div", "task-row");
+			const row: HTMLElement = createElement("div", "task-row");
 			const boxModifier = createElement("div", "box-modifier");
 			const taskBox = this._createTaskBox(task);
 			row.style.width = `${String(getElementFullWidth(this._container))}px`;
@@ -59,19 +57,15 @@ export class Calender extends GanttChart {
 			taskBox.appendChild(boxModifier);
 			let isMouseDown = false;
 
-			let width: number;
-
 			const leftBox = document.getElementById(Date.parse(task.start).toString());
-			const leftCords = leftBox?.offsetLeft;
-			const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft;
-			// eslint-disable-next-line eqeqeq
-			if (leftCords != null && rightBox != null) {
-				width = rightBox - leftCords + 50;
-				taskBox.style.left = `${leftCords}px`;
-				taskBox.style.width = `${width}px`;
-				taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
-				row.appendChild(taskBox);
-			}
+			const leftCords = leftBox?.offsetLeft ?? 0;
+			const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft ?? 0;
+			const width: number = rightBox - leftCords + 50;
+			taskBox.style.left = `${leftCords}px`;
+			taskBox.style.width = `${width}px`;
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
+			row.appendChild(taskBox);
 			const mainBox = document.getElementById("mainBox") as HTMLElement;
 			const modifiedWidth = (event: { clientX: number }, boxClientX: number) => {
 				const xCoordinate: number = event.clientX;
@@ -80,7 +74,6 @@ export class Calender extends GanttChart {
 				if (isMouseDown && initialWidth) {
 					taskBox.style.width = `${initialWidth + (xCoordinate - boxClientX)}px`;
 				}
-				// You can use the xCoordinate variable for your purposes here
 			};
 			boxModifier.addEventListener("mousedown", function (event) {
 				isMouseDown = true;
