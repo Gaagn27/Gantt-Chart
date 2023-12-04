@@ -79,7 +79,8 @@ export class Calender extends GanttChart {
 		let box: HTMLElement | null = null;
 		let boxClientX = 0;
 		let isMouseMove = false;
-
+		const dayEl = document.querySelector("#dateHeader .day") as HTMLElement;
+		const dayWidth = dayEl.offsetWidth;
 		const modifiedWidth = (
 			e: MouseEvent,
 			boxElement: HTMLElement | null,
@@ -88,9 +89,14 @@ export class Calender extends GanttChart {
 		) => {
 			if (isMouseDown && initialWidth && boxElement) {
 				const xCoordinate = e.clientX;
-				boxElement.style.width = `${initialWidth + (xCoordinate - initialClientX)}px`;
+				const calculatedWidth = initialWidth + (xCoordinate - initialClientX);
+				boxElement.style.width = `${calculatedWidth}px`;
 				isMouseMove = true;
+
+				return calculatedWidth;
 			}
+
+			return 0;
 		};
 
 		document.addEventListener("mousedown", function (event) {
@@ -106,15 +112,34 @@ export class Calender extends GanttChart {
 			}
 		});
 
-		mainBox.addEventListener("mouseup", function (event) {
+		const { start } = getDateRange(this._tasks);
+		document.addEventListener("mouseup", (event) => {
 			isMouseDown = false;
-			if (box) {
-				mainBox.removeEventListener("mousemove", (e) =>
-					modifiedWidth(e, box, boxClientX, boxWidth)
+			const currentStart = new Date(start);
+			const clickedEl = event.target as HTMLElement;
+			if (clickedEl.classList.contains("box-modifier")) {
+				const otherBox = clickedEl.parentNode as HTMLElement;
+				const otherBoxWidth = otherBox.offsetWidth;
+				const otherBoxLeft = otherBox.offsetLeft;
+				currentStart.setDate(
+					currentStart.getDate() + Math.round((otherBoxWidth + otherBoxLeft) / dayWidth)
 				);
+				this._tasks = this._tasks.map((task) => {
+					if (task.uid === otherBox.dataset.uid) {
+						task.end = currentStart.toISOString().split("T")[0];
+					}
+
+					return task;
+				});
+			}
+			if (box) {
+				mainBox.removeEventListener("mousemove", (e) => {
+					modifiedWidth(e, box, boxClientX, boxWidth);
+				});
 				if (!isMouseMove) {
 					// This condition triggers when there was no mouse move, indicating a click
 					event.stopPropagation();
+
 					// Additional click-related logic here
 				}
 			}
