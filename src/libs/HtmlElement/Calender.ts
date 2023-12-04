@@ -55,7 +55,6 @@ export class Calender extends GanttChart {
 			row.style.width = `${String(getElementFullWidth(this._container))}px`;
 			taskBox.appendChild(this._createTooltip(task));
 			taskBox.appendChild(boxModifier);
-			let isMouseDown = false;
 
 			const leftBox = document.getElementById(Date.parse(task.start).toString());
 			const leftCords = leftBox?.offsetLeft ?? 0;
@@ -66,26 +65,60 @@ export class Calender extends GanttChart {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
 			row.appendChild(taskBox);
-			const mainBox = document.getElementById("mainBox") as HTMLElement;
-			const modifiedWidth = (event: { clientX: number }, boxClientX: number) => {
-				const xCoordinate: number = event.clientX;
-				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-				const initialWidth = width;
-				if (isMouseDown && initialWidth) {
-					taskBox.style.width = `${initialWidth + (xCoordinate - boxClientX)}px`;
-				}
-			};
-			boxModifier.addEventListener("mousedown", function (event) {
-				isMouseDown = true;
-				mainBox.addEventListener("mousemove", (e) => modifiedWidth(e, event.clientX));
-			});
 
-			mainBox.addEventListener("mouseup", function (event) {
-				isMouseDown = false;
-				event.stopPropagation();
-			});
 			this._container.appendChild(row);
 			taskBox.addEventListener("click", () => new Task().edit(task));
+		});
+		this._boxMoveEvent();
+	}
+
+	private _boxMoveEvent() {
+		const mainBox = document.getElementById("mainBox") as HTMLElement;
+		let isMouseDown = false;
+		let boxWidth = 0;
+		let box: HTMLElement | null = null;
+		let boxClientX = 0;
+		let isMouseMove = false;
+
+		const modifiedWidth = (
+			e: MouseEvent,
+			boxElement: HTMLElement | null,
+			initialClientX: number,
+			initialWidth: number
+		) => {
+			if (isMouseDown && initialWidth && boxElement) {
+				const xCoordinate = e.clientX;
+				boxElement.style.width = `${initialWidth + (xCoordinate - initialClientX)}px`;
+				isMouseMove = true;
+			}
+		};
+
+		document.addEventListener("mousedown", function (event) {
+			const clickedEl = event.target as HTMLElement;
+			if (clickedEl.classList.contains("box-modifier")) {
+				isMouseDown = true;
+				box = clickedEl.parentNode as HTMLElement;
+
+				boxWidth = box.offsetWidth;
+				boxClientX = event.clientX;
+
+				mainBox.addEventListener("mousemove", (e) => modifiedWidth(e, box, boxClientX, boxWidth));
+			}
+		});
+
+		mainBox.addEventListener("mouseup", function (event) {
+			isMouseDown = false;
+			if (box) {
+				mainBox.removeEventListener("mousemove", (e) =>
+					modifiedWidth(e, box, boxClientX, boxWidth)
+				);
+				if (!isMouseMove) {
+					// This condition triggers when there was no mouse move, indicating a click
+					event.stopPropagation();
+					// Additional click-related logic here
+				}
+			}
+			isMouseMove = false;
 		});
 	}
 
