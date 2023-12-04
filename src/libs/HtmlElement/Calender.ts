@@ -121,6 +121,15 @@ export class Calender extends GanttChart {
 				const otherBox = clickedEl.parentNode as HTMLElement;
 				const otherBoxWidth = otherBox.offsetWidth;
 				const otherBoxLeft = otherBox.offsetLeft;
+				let newWidth: number;
+				const offsetWidth = otherBoxWidth % dayWidth;
+				if (offsetWidth < 25) {
+					newWidth = otherBoxWidth - (otherBoxWidth % dayWidth);
+				} else {
+					newWidth = (otherBoxWidth-offsetWidth) + 50;
+				}
+
+				otherBox.style.width = `${newWidth}px`;
 				currentStart.setDate(
 					currentStart.getDate() + Math.round((otherBoxWidth + otherBoxLeft) / dayWidth)
 				);
