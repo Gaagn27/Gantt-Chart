@@ -3,6 +3,7 @@ import { getDateRange, nextDay } from "../Date/Date";
 import { Task } from "../Task";
 import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
+import { BoxMover } from "./BoxMover";
 
 export class Calender extends GanttChart {
 	public renderDayHeaders(): void {
@@ -69,91 +70,8 @@ export class Calender extends GanttChart {
 			this._container.appendChild(row);
 			taskBox.addEventListener("click", () => new Task().edit(task));
 		});
-		this._boxMoveEvent();
-	}
-
-	private _boxMoveEvent() {
-		const mainBox = document.getElementById("mainBox") as HTMLElement;
-		let isMouseDown = false;
-		let boxWidth = 0;
-		let box: HTMLElement | null = null;
-		let boxClientX = 0;
-		let isMouseMove = false;
-		const dayEl = document.querySelector("#dateHeader .day") as HTMLElement;
-		const dayWidth = dayEl.offsetWidth;
-		const modifiedWidth = (
-			e: MouseEvent,
-			boxElement: HTMLElement | null,
-			initialClientX: number,
-			initialWidth: number
-		) => {
-			if (isMouseDown && initialWidth && boxElement) {
-				const xCoordinate = e.clientX;
-				const calculatedWidth = initialWidth + (xCoordinate - initialClientX);
-				boxElement.style.width = `${calculatedWidth}px`;
-				isMouseMove = true;
-
-				return calculatedWidth;
-			}
-
-			return 0;
-		};
-
-		document.addEventListener("mousedown", function (event) {
-			const clickedEl = event.target as HTMLElement;
-			if (clickedEl.classList.contains("box-modifier")) {
-				isMouseDown = true;
-				box = clickedEl.parentNode as HTMLElement;
-
-				boxWidth = box.offsetWidth;
-				boxClientX = event.clientX;
-
-				mainBox.addEventListener("mousemove", (e) => modifiedWidth(e, box, boxClientX, boxWidth));
-			}
-		});
-
-		const { start } = getDateRange(this._tasks);
-		document.addEventListener("mouseup", (event) => {
-			isMouseDown = false;
-			const currentStart = new Date(start);
-			const clickedEl = event.target as HTMLElement;
-			if (clickedEl.classList.contains("box-modifier")) {
-				const otherBox = clickedEl.parentNode as HTMLElement;
-				const otherBoxWidth = otherBox.offsetWidth;
-				const otherBoxLeft = otherBox.offsetLeft;
-				let newWidth: number;
-				const offsetWidth = otherBoxWidth % dayWidth;
-				if (offsetWidth < 25) {
-					newWidth = otherBoxWidth - (otherBoxWidth % dayWidth);
-				} else {
-					newWidth = (otherBoxWidth-offsetWidth) + 50;
-				}
-
-				otherBox.style.width = `${newWidth}px`;
-				currentStart.setDate(
-					currentStart.getDate() + Math.round((otherBoxWidth + otherBoxLeft) / dayWidth)
-				);
-				this._tasks = this._tasks.map((task) => {
-					if (task.uid === otherBox.dataset.uid) {
-						task.end = currentStart.toISOString().split("T")[0];
-					}
-
-					return task;
-				});
-			}
-			if (box) {
-				mainBox.removeEventListener("mousemove", (e) => {
-					modifiedWidth(e, box, boxClientX, boxWidth);
-				});
-				if (!isMouseMove) {
-					// This condition triggers when there was no mouse move, indicating a click
-					event.stopPropagation();
-
-					// Additional click-related logic here
-				}
-			}
-			isMouseMove = false;
-		});
+		const boxMover = new BoxMover(this._tasks);
+		boxMover.boxMoveEvent();
 	}
 
 	private _createTooltip(task: TaskInterface): HTMLElement {
