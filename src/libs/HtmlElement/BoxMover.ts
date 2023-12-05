@@ -40,7 +40,7 @@ export class BoxMover {
 
 	private mouseDown(event: MouseEvent) {
 		const clickedEl = event.target as HTMLElement;
-		if (clickedEl.classList.contains("box-modifier")) {
+		if (clickedEl.classList.contains("end-date-mod")) {
 			this.isMouseDown = true;
 			this.box = clickedEl.parentNode as HTMLElement;
 
@@ -57,7 +57,7 @@ export class BoxMover {
 		this.isMouseDown = false;
 
 		const clickedEl = event.target as HTMLElement;
-		if (clickedEl.classList.contains("box-modifier")) {
+		if (clickedEl.classList.contains("end-date-mod")) {
 			this.adjustBox(clickedEl);
 		}
 		if (this.box) {

@@ -88,10 +88,8 @@
       height:20px;
       background-color: #062d41;
       margin-top: 15px;
-    }
-    .task-box {
       position: relative;
-      display: inline-block;
+      display: flex;
       border-bottom: 1px dotted black; /* Add underline effect */
       /* You can customize other styles like background-color, border-radius, padding, etc. */
     }
@@ -281,14 +279,21 @@
       overflow: hidden;
       position: absolute;
       top: 0;
-      right: 0;
       bottom: 0;
       background-color: #575787; /* Change this to the desired color */
       z-index: 2; /* Ensure the .box-modifier is above the overlay */
     }
-
+    .end-date-mod{
+      right: 0;
+    }
+    .start-date-mod{
+      left: 0;
+    }
     .task-box:hover .box-modifier {
       width: 3px;
+    }
+    .mid-box{
+      width:100%;
     }
     .box-modifier:hover{
       cursor: col-resize;

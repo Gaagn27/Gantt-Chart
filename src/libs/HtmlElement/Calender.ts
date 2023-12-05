@@ -51,11 +51,17 @@ export class Calender extends GanttChart {
 	public renderTaskRows(): void {
 		this._tasks.forEach((task) => {
 			const row: HTMLElement = createElement("div", "task-row");
-			const boxModifier = createElement("div", "box-modifier");
+			const startDateModifier: HTMLElement = createElement("div", "start-date-mod");
+			const endDateModifier = createElement("div", "end-date-mod");
+			const midBox = createElement("div", "mid-box");
+			endDateModifier.classList.add("box-modifier");
+			startDateModifier.classList.add("box-modifier");
 			const taskBox = this._createTaskBox(task);
 			row.style.width = `${String(getElementFullWidth(this._container))}px`;
 			taskBox.appendChild(this._createTooltip(task));
-			taskBox.appendChild(boxModifier);
+			taskBox.appendChild(startDateModifier);
+			taskBox.appendChild(endDateModifier);
+			taskBox.appendChild(midBox);
 
 			const leftBox = document.getElementById(Date.parse(task.start).toString());
 			const leftCords = leftBox?.offsetLeft ?? 0;
@@ -68,7 +74,7 @@ export class Calender extends GanttChart {
 			row.appendChild(taskBox);
 
 			this._container.appendChild(row);
-			taskBox.addEventListener("click", () => new Task().edit(task));
+			midBox.addEventListener("click", () => new Task().edit(task));
 		});
 		const boxMover = new BoxMover(this._tasks);
 		boxMover.boxMoveEvent();
