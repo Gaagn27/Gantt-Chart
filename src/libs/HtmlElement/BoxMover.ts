@@ -93,7 +93,7 @@ export class BoxMover {
 
 		otherBox.style.width = `${newWidth}px`;
 		currentStart.setDate(
-			currentStart.getDate() + Math.round((otherBoxWidth + otherBoxLeft) / dayWidth)
+			currentStart.getDate() + (Math.round((otherBoxWidth + otherBoxLeft) / dayWidth) - 1)
 		);
 		this._tasks = this._tasks.map((task) => {
 			if (task.uid === otherBox.dataset.uid) {

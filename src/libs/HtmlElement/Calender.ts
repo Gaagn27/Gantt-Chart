@@ -90,13 +90,12 @@ export class Calender extends GanttChart {
 	public updateTasks(tasks: TaskInterface[]): void {
 		const oldDate = getDateRange(this._tasks);
 		const newDate = getDateRange(tasks);
-		this._tasks = tasks;
 		if (oldDate.start > newDate.start || oldDate.end < newDate.end) {
 			this.renderCalender();
 
 			return;
 		}
-		this.renderTaskRows();
+		super.updateTasks(tasks);
 	}
 
 	private _createTooltip(task: TaskInterface): HTMLElement {
