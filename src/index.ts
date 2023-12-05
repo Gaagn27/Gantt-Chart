@@ -16,7 +16,7 @@ function isTaskDay(date: Date, tasks: Task[]): boolean {
 		return date >= taskStart && date <= taskEnd;
 	});
 }
-function generateRandomId(length=16): string {
+function generateRandomId(length = 16): string {
 	const alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	let id = "";
 
@@ -48,9 +48,7 @@ function renderCalendar(configs: ChartConfigs): void {
 	// Render row with day numbers
 	const calendar: Calender = new Calender(mainBox, tasks);
 	const sidebar: Sidebar = new Sidebar(sideBarEl, tasks);
-	calendar.renderDayHeaders();
-	calendar.renderTaskRows();
-	calendar.drawLine();
+	calendar.renderCalender();
 	sidebar.renderTasksSidebar();
 
 	Modal.renderModal(configs.modalConfigs);
@@ -82,6 +80,8 @@ function renderCalendar(configs: ChartConfigs): void {
 				configs.tasks.push(task);
 			}
 			calendar.updateTasks(configs.tasks);
+			// calendar.renderCalender();
+
 			sidebar.updateTasks(configs.tasks);
 			Modal.closeModal();
 			const form = document.querySelector("form#taskForm") as HTMLFormElement;
@@ -98,9 +98,21 @@ function renderCalendar(configs: ChartConfigs): void {
 	}
 }
 
+// Get the current date
+const currentDate = new Date();
+
+// Get the start of the current month
+const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+// Get the end of the current month
+const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+
+// Format dates in ISO format (YYYY-MM-DD)
+const start = startOfMonth.toISOString().slice(0, 10);
+const end = endOfMonth.toISOString().slice(0, 10);
 const tasks = [
-	{ name: "Task 1", start: "2023-11-01", end: "2023-11-05" },
-	{ name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
+	{ name: "New Task", start, end },
+	// { name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
 ];
 renderCalendar({
 	id: "renderCalendar",

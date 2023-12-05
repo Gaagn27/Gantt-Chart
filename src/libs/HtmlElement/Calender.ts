@@ -1,9 +1,9 @@
 import { Task as TaskInterface } from "../../inerfaces/Task";
 import { getDateRange, nextDay } from "../Date/Date";
 import { Task } from "../Task";
+import { BoxMover } from "./BoxMover";
 import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
-import { BoxMover } from "./BoxMover";
 
 export class Calender extends GanttChart {
 	public renderDayHeaders(): void {
@@ -78,6 +78,25 @@ export class Calender extends GanttChart {
 		});
 		const boxMover = new BoxMover(this._tasks);
 		boxMover.boxMoveEvent();
+	}
+
+	public renderCalender(): void {
+		this._container.innerHTML = "";
+		this.renderDayHeaders();
+		this.renderTaskRows();
+		this.drawLine();
+	}
+
+	public updateTasks(tasks: TaskInterface[]): void {
+		const oldDate = getDateRange(this._tasks);
+		const newDate = getDateRange(tasks);
+		this._tasks = tasks;
+		if (oldDate.start > newDate.start || oldDate.end < newDate.end) {
+			this.renderCalender();
+
+			return;
+		}
+		this.renderTaskRows();
 	}
 
 	private _createTooltip(task: TaskInterface): HTMLElement {
