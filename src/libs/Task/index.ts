@@ -18,8 +18,8 @@ export class Task {
 		form.appendChild(uidEl);
 		for (const taskKey in task) {
 			const input = form.elements.namedItem(taskKey);
-			if (input) {
-				(input as HTMLInputElement).value = task[taskKey];
+			if (input && typeof task[taskKey] === "string") {
+				(input as HTMLInputElement).value = <string>task[taskKey];
 			}
 		}
 		Modal.openModal();

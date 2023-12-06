@@ -23,8 +23,8 @@ export class Sidebar extends GanttChart {
 		this._tasks.forEach((task) => {
 			const taskSide = createElement("div", "task-row", task.name);
 			if (task.uid) {
-				taskSide.id = `task-side-${task.uid}`;
-				taskSide.setAttribute("data-uid", task.uid);
+				taskSide.id = `task-side-${<string>task.uid}`;
+				taskSide.setAttribute("data-uid", <string>task.uid);
 			}
 			taskSide.addEventListener("click", () => new Task().edit(task));
 			this._container.appendChild(taskSide);

@@ -110,7 +110,7 @@ export class Calender extends GanttChart {
 	private _createTaskBox(task: TaskInterface): HTMLElement {
 		const taskBox = createElement("div", "task-box", "");
 		if (task.uid) {
-			taskBox.setAttribute("data-uid", task.uid);
+			taskBox.setAttribute("data-uid", <string>task.uid);
 		}
 		taskBox.style.position = "absolute";
 

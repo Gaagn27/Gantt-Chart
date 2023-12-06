@@ -102,7 +102,7 @@ function renderCalendar(configs: ChartConfigs): void {
 const currentDate = new Date();
 
 // Get the start of the current month
-const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 2);
 
 // Get the end of the current month
 const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
@@ -111,8 +111,13 @@ const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 
 const start = startOfMonth.toISOString().slice(0, 10);
 const end = endOfMonth.toISOString().slice(0, 10);
 const tasks = [
-	{ name: "New Task", start, end },
-	// { name: "Task 2", start: "2023-11-03", end: "2023-12-08" },
+	{
+		name: "New Task",
+		start,
+		end,
+		uid: "rsa",
+		subTasks: [{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa" }],
+	},
 ];
 renderCalendar({
 	id: "renderCalendar",
