@@ -38,6 +38,26 @@ export class BoxMover {
 		return 0;
 	}
 
+	private modifiedWidthLeft(
+		e: MouseEvent,
+		initialClientX: number,
+		initialWidth: number,
+		initialLeft: number
+	): number {
+		if (this.isMouseDown && initialLeft && this.box) {
+			const xCoordinate = e.clientX;
+			const calculatedLeft = initialLeft - (initialClientX - xCoordinate);
+			const calculatedWidth = initialWidth + (initialClientX - xCoordinate);
+			this.box.style.left = `${calculatedLeft}px`;
+			this.box.style.width = `${calculatedWidth}px`;
+			this.isMouseMove = true;
+
+			return calculatedLeft;
+		}
+
+		return 0;
+	}
+
 	private mouseDown(event: MouseEvent) {
 		const clickedEl = event.target as HTMLElement;
 		if (clickedEl.classList.contains("end-date-mod")) {
@@ -49,6 +69,18 @@ export class BoxMover {
 
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
 				this.modifiedWidth(e, this.boxClientX, this.boxWidth)
+			);
+		}
+		if (clickedEl.classList.contains("start-date-mod")) {
+			this.isMouseDown = true;
+			this.box = clickedEl.parentNode as HTMLElement;
+
+			const boxLeft = this.box.offsetLeft;
+			const boxWidth = this.box.offsetWidth;
+			this.boxClientX = event.clientX;
+
+			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
+				this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft)
 			);
 		}
 	}
