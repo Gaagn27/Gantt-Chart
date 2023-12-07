@@ -49,6 +49,8 @@ export class Calender extends GanttChart {
 	}
 
 	public renderTaskRows(): void {
+		// eslint-disable-next-line array-callback-return
+		document.querySelectorAll(".mainBox>.task-row").forEach((e) => e.remove());
 		this._tasks.forEach((task) => {
 			const row: HTMLElement = createElement("div", "task-row");
 			const startDateModifier: HTMLElement = createElement("div", "start-date-mod");

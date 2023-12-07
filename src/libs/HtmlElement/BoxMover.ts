@@ -1,5 +1,6 @@
 import { Task } from "../../inerfaces/Task";
 import { getDateRange } from "../Date/Date";
+import { Calender } from "./Calender";
 
 export class BoxMover {
 	private _tasks: Task[];
@@ -139,6 +140,7 @@ export class BoxMover {
 
 			return task;
 		});
+		new Calender(this.mainBox, this._tasks).renderTaskRows();
 	}
 
 	private adjustStartDate(clickedEl: HTMLElement): void {
@@ -165,7 +167,9 @@ export class BoxMover {
 
 			otherBox.style.width = `${newWidth}px`;
 			otherBox.style.left = `${newLeft}px`;
-			currentStart.setDate(currentStart.getDate() + Math.round((newLeft - this.boxLeft) / dayWidth));
+			currentStart.setDate(
+				currentStart.getDate() + Math.round((newLeft - this.boxLeft) / dayWidth)
+			);
 			this._tasks = this._tasks.map((task) => {
 				if (task.uid === otherBox.dataset.uid) {
 					task.start = currentStart.toISOString().split("T")[0];
@@ -173,8 +177,8 @@ export class BoxMover {
 
 				return task;
 			});
+			new Calender(this.mainBox, this._tasks).renderTaskRows();
 		}
-
 	}
 
 	private dayWidth(): number {
