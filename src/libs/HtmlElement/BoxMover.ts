@@ -76,11 +76,10 @@ export class BoxMover {
 				this.modifiedWidth(e, this.boxClientX, this.boxWidth)
 			);
 		}
-		let boxLeft = 0;
 		if (this.clickedEl.classList.contains("start-date-mod")) {
 			this.isMouseDown = true;
 			this.box = this.clickedEl.parentNode as HTMLElement;
-			boxLeft = this.box.offsetLeft;
+			const boxLeft = this.box.offsetLeft;
 			this.boxLeft = boxLeft;
 			const boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
