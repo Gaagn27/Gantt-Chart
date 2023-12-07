@@ -1,3 +1,5 @@
+import { SubTask } from "../../inerfaces/SubTask";
+import { Task as TaskInterface } from "../../inerfaces/Task";
 import { Task } from "../Task";
 import { GanttChart } from "./GanttChart";
 import { createElement } from "./HtmlHelper";
@@ -21,13 +23,32 @@ export class Sidebar extends GanttChart {
 
 	public renderTaskRows(): void {
 		this._tasks.forEach((task) => {
-			const taskSide = createElement("div", "task-row", task.name);
-			if (task.uid) {
-				taskSide.id = `task-side-${<string>task.uid}`;
-				taskSide.setAttribute("data-uid", <string>task.uid);
+			const taskElement = this.createTaskElement(task);
+			this._container.appendChild(taskElement);
+
+			if (task.subTasks) {
+				task.subTasks.forEach((subTask) => {
+					const subTaskElement = this.createTaskElement(subTask, true);
+					this._container.appendChild(subTaskElement);
+				});
 			}
-			taskSide.addEventListener("click", () => new Task().edit(task));
-			this._container.appendChild(taskSide);
 		});
+	}
+
+	private createTaskElement(task: TaskInterface | SubTask, isSubTask = false) {
+		const element = createElement("div", "task-row", task.name);
+
+		if (task.uid) {
+			element.id = `task-side-${<string>task.uid}`;
+			element.setAttribute("data-uid", <string>task.uid);
+		}
+
+		if (isSubTask) {
+			element.classList.add("sub-task-side");
+		}
+
+		element.addEventListener("click", () => new Task().edit(task));
+
+		return element;
 	}
 }
