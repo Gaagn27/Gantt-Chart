@@ -1,6 +1,5 @@
 import { Task } from "../../inerfaces/Task";
 import { getDateRange } from "../Date/Date";
-import { Calender } from "./Calender";
 
 export class BoxMover {
 	private _tasks: Task[];
@@ -12,10 +11,12 @@ export class BoxMover {
 	private readonly mainBox: HTMLElement;
 	private boxLeft: number;
 	private clickedEl: HTMLElement | undefined;
+	private startMove: boolean;
 	constructor(tasks: Task[]) {
 		this._tasks = tasks;
 		this.isMouseDown = false;
 		this.isMouseMove = false;
+		this.startMove = false;
 		this.boxWidth = 0;
 		this.box = null;
 		this.boxClientX = 0;
@@ -48,7 +49,7 @@ export class BoxMover {
 		initialWidth: number,
 		initialLeft: number
 	): number {
-		if (this.isMouseDown && initialLeft && this.box) {
+		if (this.isMouseDown && initialLeft && this.box && this.startMove) {
 			const xCoordinate = e.clientX;
 			const calculatedLeft = initialLeft - (initialClientX - xCoordinate);
 			const calculatedWidth = initialWidth + (initialClientX - xCoordinate);
@@ -75,14 +76,15 @@ export class BoxMover {
 				this.modifiedWidth(e, this.boxClientX, this.boxWidth)
 			);
 		}
+		let boxLeft = 0;
 		if (this.clickedEl.classList.contains("start-date-mod")) {
 			this.isMouseDown = true;
 			this.box = this.clickedEl.parentNode as HTMLElement;
-			const boxLeft = this.box.offsetLeft;
+			boxLeft = this.box.offsetLeft;
 			this.boxLeft = boxLeft;
 			const boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
-
+			this.startMove = true;
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
 				this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft)
 			);
@@ -96,6 +98,7 @@ export class BoxMover {
 				this.adjustBox(this.clickedEl);
 			}
 			if (this.clickedEl.classList.contains("start-date-mod")) {
+				this.startMove = false;
 				this.adjustStartDate(this.clickedEl);
 			}
 		}
@@ -140,7 +143,6 @@ export class BoxMover {
 
 			return task;
 		});
-		new Calender(this.mainBox, this._tasks).renderTaskRows();
 	}
 
 	private adjustStartDate(clickedEl: HTMLElement): void {
@@ -177,7 +179,6 @@ export class BoxMover {
 
 				return task;
 			});
-			new Calender(this.mainBox, this._tasks).renderTaskRows();
 		}
 	}
 
