@@ -22,12 +22,12 @@ export class Sidebar extends GanttChart {
 	}
 
 	public renderTaskRows(): void {
-		this._tasks.forEach((task) => {
+		this._tasks.forEach((task: TaskInterface) => {
 			const taskElement = this.createTaskElement(task);
 			this._container.appendChild(taskElement);
 
 			if (task.subTasks) {
-				task.subTasks.forEach((subTask) => {
+				task.subTasks.forEach((subTask: SubTask) => {
 					const subTaskElement = this.createTaskElement(subTask, true);
 					this._container.appendChild(subTaskElement);
 				});
@@ -44,6 +44,7 @@ export class Sidebar extends GanttChart {
 		}
 
 		if (isSubTask) {
+			element.innerHTML = `<p>${task.name}</p>`;
 			element.classList.add("sub-task-side");
 		}
 

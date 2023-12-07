@@ -1,3 +1,4 @@
+import { SubTask } from "../../inerfaces/SubTask";
 import { Task as TaskInterface } from "../../inerfaces/Task";
 import { getDateRange, nextDay } from "../Date/Date";
 import { Task } from "../Task";
@@ -50,33 +51,16 @@ export class Calender extends GanttChart {
 
 	public renderTaskRows(): void {
 		// eslint-disable-next-line array-callback-return
-		document.querySelectorAll(".mainBox>.task-row").forEach((e) => e.remove());
 		this._tasks.forEach((task) => {
-			const row: HTMLElement = createElement("div", "task-row");
-			const startDateModifier: HTMLElement = createElement("div", "start-date-mod");
-			const endDateModifier = createElement("div", "end-date-mod");
-			const midBox = createElement("div", "mid-box");
-			endDateModifier.classList.add("box-modifier");
-			startDateModifier.classList.add("box-modifier");
-			const taskBox = this._createTaskBox(task);
-			row.style.width = `${String(getElementFullWidth(this._container))}px`;
-			taskBox.appendChild(this._createTooltip(task));
-			taskBox.appendChild(startDateModifier);
-			taskBox.appendChild(endDateModifier);
-			taskBox.appendChild(midBox);
-
-			const leftBox = document.getElementById(Date.parse(task.start).toString());
-			const leftCords = leftBox?.offsetLeft ?? 0;
-			const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft ?? 0;
-			const width: number = rightBox - leftCords + 50;
-			taskBox.style.left = `${leftCords}px`;
-			taskBox.style.width = `${width}px`;
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
-			row.appendChild(taskBox);
-
-			this._container.appendChild(row);
-			midBox.addEventListener("click", () => new Task().edit(task));
+			const taskRow = this.createTaskElement(task);
+			this._container.appendChild(taskRow);
+			if (task.subTasks) {
+				task.subTasks.forEach((subTask) => {
+					const taskRow = this.createTaskElement(subTask);
+					taskRow.classList.add("sub-task-row");
+					this._container.appendChild(taskRow);
+				});
+			}
 		});
 		const boxMover = new BoxMover(this._tasks);
 		boxMover.boxMoveEvent();
@@ -117,5 +101,36 @@ export class Calender extends GanttChart {
 		taskBox.style.position = "absolute";
 
 		return taskBox;
+	}
+
+	private createTaskElement(task: TaskInterface | SubTask, isSubTask = false) {
+		const row: HTMLElement = createElement("div", "task-row");
+		const startDateModifier: HTMLElement = createElement("div", "start-date-mod");
+		const endDateModifier = createElement("div", "end-date-mod");
+		const midBox = createElement("div", "mid-box");
+		endDateModifier.classList.add("box-modifier");
+		startDateModifier.classList.add("box-modifier");
+		const taskBox = this._createTaskBox(task);
+		if (isSubTask) {
+			taskBox.classList.add("sub-task-row");
+		}
+		row.style.width = `${String(getElementFullWidth(this._container))}px`;
+		taskBox.appendChild(this._createTooltip(task));
+		taskBox.appendChild(startDateModifier);
+		taskBox.appendChild(endDateModifier);
+		taskBox.appendChild(midBox);
+
+		const leftBox = document.getElementById(Date.parse(task.start).toString());
+		const leftCords = leftBox?.offsetLeft ?? 0;
+		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft ?? 0;
+		const width: number = rightBox - leftCords + 50;
+		taskBox.style.left = `${leftCords}px`;
+		taskBox.style.width = `${width}px`;
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
+		midBox.addEventListener("click", () => new Task().edit(task));
+		row.appendChild(taskBox);
+
+		return row;
 	}
 }
