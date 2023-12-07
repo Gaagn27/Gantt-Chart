@@ -9,6 +9,8 @@ export class BoxMover {
 	private box: HTMLElement | null;
 	private boxClientX: number;
 	private readonly mainBox: HTMLElement;
+	private boxLeft: number;
+	private clickedEl: HTMLElement | undefined;
 	constructor(tasks: Task[]) {
 		this._tasks = tasks;
 		this.isMouseDown = false;
@@ -16,6 +18,7 @@ export class BoxMover {
 		this.boxWidth = 0;
 		this.box = null;
 		this.boxClientX = 0;
+		this.boxLeft = 0;
 		this.mainBox = document.getElementById("mainBox") as HTMLElement;
 	}
 
@@ -59,10 +62,10 @@ export class BoxMover {
 	}
 
 	private mouseDown(event: MouseEvent) {
-		const clickedEl = event.target as HTMLElement;
-		if (clickedEl.classList.contains("end-date-mod")) {
+		this.clickedEl = event.target as HTMLElement;
+		if (this.clickedEl.classList.contains("end-date-mod")) {
 			this.isMouseDown = true;
-			this.box = clickedEl.parentNode as HTMLElement;
+			this.box = this.clickedEl.parentNode as HTMLElement;
 
 			this.boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
@@ -71,11 +74,11 @@ export class BoxMover {
 				this.modifiedWidth(e, this.boxClientX, this.boxWidth)
 			);
 		}
-		if (clickedEl.classList.contains("start-date-mod")) {
+		if (this.clickedEl.classList.contains("start-date-mod")) {
 			this.isMouseDown = true;
-			this.box = clickedEl.parentNode as HTMLElement;
-
+			this.box = this.clickedEl.parentNode as HTMLElement;
 			const boxLeft = this.box.offsetLeft;
+			this.boxLeft = boxLeft;
 			const boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
 
@@ -87,11 +90,15 @@ export class BoxMover {
 
 	private mouseUp(event: MouseEvent): void {
 		this.isMouseDown = false;
-
-		const clickedEl = event.target as HTMLElement;
-		if (clickedEl.classList.contains("end-date-mod")) {
-			this.adjustBox(clickedEl);
+		if (this.clickedEl) {
+			if (this.clickedEl.classList.contains("end-date-mod")) {
+				this.adjustBox(this.clickedEl);
+			}
+			if (this.clickedEl.classList.contains("start-date-mod")) {
+				this.adjustStartDate(this.clickedEl);
+			}
 		}
+
 		if (this.box) {
 			this.mainBox.removeEventListener("mousemove", (e) => {
 				this.modifiedWidth(e, this.boxClientX, this.boxWidth);
@@ -105,9 +112,7 @@ export class BoxMover {
 	}
 
 	private adjustBox(clickedEl: HTMLElement): void {
-		const dayEl = document.querySelector("#dateHeader .day") as HTMLElement;
-
-		const dayWidth = dayEl.offsetWidth;
+		const dayWidth = this.dayWidth();
 		const { start } = getDateRange(this._tasks);
 
 		const currentStart = new Date(start);
@@ -120,7 +125,7 @@ export class BoxMover {
 		if (offsetWidth < 25) {
 			newWidth = otherBoxWidth - (otherBoxWidth % dayWidth);
 		} else {
-			newWidth = otherBoxWidth - offsetWidth + 50;
+			newWidth = otherBoxWidth - offsetWidth + dayWidth;
 		}
 
 		otherBox.style.width = `${newWidth}px`;
@@ -134,5 +139,47 @@ export class BoxMover {
 
 			return task;
 		});
+	}
+
+	private adjustStartDate(clickedEl: HTMLElement): void {
+		const dayWidth = this.dayWidth();
+
+		const otherBox = clickedEl.parentNode as HTMLElement;
+		const startDate = this._tasks.find((task) => task.uid === otherBox.dataset.uid);
+		if (startDate) {
+			const currentStart = new Date(startDate.start);
+
+			const otherBoxWidth = otherBox.offsetWidth;
+			const otherBoxLeft = otherBox.offsetLeft;
+			let newWidth: number;
+			let newLeft: number;
+			const offsetWidth = otherBoxWidth % dayWidth;
+			if (offsetWidth < 25) {
+				newLeft = otherBoxLeft + (otherBoxWidth % dayWidth);
+				newWidth = otherBoxWidth - (otherBoxWidth % dayWidth);
+			} else {
+				// console.log(otherBoxLeft , ((otherBoxWidth % dayWidth) - dayWidth));
+				newLeft = otherBoxLeft - (dayWidth - (otherBoxWidth % dayWidth));
+				newWidth = otherBoxWidth - offsetWidth + dayWidth;
+			}
+
+			otherBox.style.width = `${newWidth}px`;
+			otherBox.style.left = `${newLeft}px`;
+			currentStart.setDate(currentStart.getDate() + Math.round((newLeft - this.boxLeft) / dayWidth));
+			this._tasks = this._tasks.map((task) => {
+				if (task.uid === otherBox.dataset.uid) {
+					task.start = currentStart.toISOString().split("T")[0];
+				}
+
+				return task;
+			});
+		}
+
+	}
+
+	private dayWidth(): number {
+		const dayEl = document.querySelector("#dateHeader .day") as HTMLElement;
+
+		return dayEl.offsetWidth;
 	}
 }
