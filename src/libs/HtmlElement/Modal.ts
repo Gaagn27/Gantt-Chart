@@ -1,5 +1,5 @@
-import { BaseInput } from "../../interfaces/html/inputs/BaseInput";
 import { ModalConfigs } from "../../interfaces/html/ModalConfigs";
+import { InputTypes } from "../../types/Inputs/InputTypes";
 import { createElement } from "./HtmlHelper";
 import { createInputElement } from "./InputHelper";
 
@@ -66,7 +66,7 @@ export class Modal {
 		closeButton.addEventListener("click", () => Modal.closeModal());
 	}
 
-	private static _createInputs(container: HTMLElement, elements: BaseInput[]): void {
+	private static _createInputs(container: HTMLElement, elements: InputTypes[]): void {
 		elements.forEach((element) => {
 			container.appendChild(createInputElement(element));
 		});

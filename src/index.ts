@@ -148,7 +148,10 @@ renderCalendar({
 			{
 				name: "task",
 				type: "select",
-				options: ["hlo"],
+				options: [
+					{ label: "test", value: "test" },
+					{ label: "disable", value: "disabled", disabled: true },
+				],
 				label: "Tasks",
 			},
 		],
