@@ -1,10 +1,10 @@
-import { Input } from "../../inerfaces/html/Input";
+import { BaseInput } from "../../inerfaces/html/inputs/BaseInput";
 import { createElement } from "./HtmlHelper";
 
 class InputHelper {
-	private readonly input: Input;
+	private readonly input: BaseInput;
 	private inputEl: HTMLElement | undefined;
-	constructor(input: Input) {
+	constructor(input: BaseInput) {
 		this.input = input;
 		this.inputEl = undefined;
 	}
@@ -16,6 +16,12 @@ class InputHelper {
 				if (this.input.value) {
 					this.inputEl.innerText = <string>this.input.value;
 				}
+				break;
+			case "select":
+				this.inputEl = document.createElement("select");
+				// if (this.input.value) {
+				// 	this.inputEl.innerText = <string>this.input.value;
+				// }
 				break;
 			default:
 				this.inputEl = document.createElement("input");
@@ -67,7 +73,7 @@ class InputHelper {
 	}
 }
 
-export function createInputElement(input: Input): HTMLElement {
+export function createInputElement(input: BaseInput): HTMLElement {
 	const inputHelper = new InputHelper(input);
 	const wrap = createElement("div", "row");
 	if (input.label) {

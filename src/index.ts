@@ -1,3 +1,5 @@
+import "../src/sass/main.scss";
+
 import { ChartConfigs } from "./inerfaces/ChartConfigs";
 import { Task } from "./inerfaces/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
@@ -5,7 +7,6 @@ import { createElement } from "./libs/HtmlElement/HtmlHelper";
 import { inputValue } from "./libs/HtmlElement/InputHelper";
 import { Modal } from "./libs/HtmlElement/Modal";
 import { Sidebar } from "./libs/HtmlElement/Sidebar";
-import "../src/sass/main.scss";
 //
 // eslint-disable-next-line no-use-before-define
 function isTaskDay(date: Date, tasks: Task[]): boolean {
@@ -143,6 +144,12 @@ renderCalendar({
 				type: "date",
 				label: "Project End Date",
 				class: "Project",
+			},
+			{
+				name: "task",
+				type: "select",
+				options: ["hlo"],
+				label: "Tasks",
 			},
 		],
 	},
