@@ -39,7 +39,7 @@ module.exports = {
 			},
 			{
 				test: /\.s[ac]ss$/i,
-				include: path.resolve(__dirname, 'src', 'sass'),
+				include: path.resolve(__dirname, "src", "sass"),
 				use: ["style-loader", "css-loader", "sass-loader"],
 			},
 		],
