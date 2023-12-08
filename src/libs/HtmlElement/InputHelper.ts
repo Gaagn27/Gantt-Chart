@@ -1,49 +1,80 @@
 import { Input } from "../../inerfaces/html/Input";
 import { createElement } from "./HtmlHelper";
 
+class InputHelper {
+	private readonly input: Input;
+	private inputEl: HTMLElement | undefined;
+	constructor(input: Input) {
+		this.input = input;
+		this.inputEl = undefined;
+	}
+
+	public createInputElement(): HTMLElement {
+		switch (this.input.type) {
+			case "textarea":
+				this.inputEl = document.createElement("textarea");
+				if (this.input.value) {
+					this.inputEl.innerText = <string>this.input.value;
+				}
+				break;
+			default:
+				this.inputEl = document.createElement("input");
+				if (this.input.value) {
+					this.inputEl.setAttribute("value", <string>this.input.value);
+				}
+				if (this.input.type) {
+					this.inputEl.setAttribute("type", this.input.type);
+				}
+				break;
+		}
+		this.assignAttribute();
+		this.assignClass();
+
+		return this.inputEl;
+	}
+
+	private assignAttribute(): this {
+		const includedAttributes: string[] = ["class", "label", "type", "value"];
+		Object.keys(this.input).forEach((key) => {
+			if (!includedAttributes.includes(key) && this.inputEl) {
+				this.inputEl.setAttribute(key, <string>this.input[key]);
+			}
+		});
+
+		return this;
+	}
+
+	private assignClass(): this {
+		if (this.input.class) {
+			let classes: unknown;
+
+			if (typeof this.input.class === "string") {
+				classes = this.input.class.split(" ");
+			} else {
+				classes = this.input.class;
+			}
+
+			if (Array.isArray(classes)) {
+				classes.forEach((className) => {
+					if (this.inputEl) {
+						this.inputEl.classList.add(<string>className);
+					}
+				});
+			}
+		}
+
+		return this;
+	}
+}
+
 export function createInputElement(input: Input): HTMLElement {
-	let htmlElement: HTMLElement;
+	const inputHelper = new InputHelper(input);
 	const wrap = createElement("div", "row");
 	if (input.label) {
 		wrap.appendChild(createElement("label", "label", <string>input.label));
 	}
-	if (input.type !== "textarea") {
-		htmlElement = document.createElement("input");
-		if (input.value) {
-			htmlElement.setAttribute("value", <string>input.value);
-		}
-		if (input.type) {
-			htmlElement.setAttribute("type", input.type);
-		}
-	} else {
-		htmlElement = document.createElement("textarea");
-		if (input.value) {
-			htmlElement.innerText = <string>input.value;
-		}
-	}
-	const includedAttributes: string[] = ["class", "label", "type", "value"];
-	Object.keys(input).forEach((key) => {
-		if (!includedAttributes.includes(key)) {
-			htmlElement.setAttribute(key, <string>input[key]);
-		}
-	});
 
-	if (input.class) {
-		let classes: string | number | boolean | string[];
-
-		if (input.class && typeof input.class === "string") {
-			classes = input.class.split(" ");
-		} else {
-			classes = input.class || [];
-		}
-
-		if (Array.isArray(classes)) {
-			classes.forEach((className) => {
-				htmlElement.classList.add(className);
-			});
-		}
-	}
-	wrap.appendChild(htmlElement);
+	wrap.appendChild(inputHelper.createInputElement());
 
 	return wrap;
 }

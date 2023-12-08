@@ -149,9 +149,9 @@ export class BoxMover {
 
 		const otherBox = clickedEl.parentNode as HTMLElement;
 		const startDate = this._tasks.find((task) => task.uid === otherBox.dataset.uid);
-		if (startDate) {
-			const currentStart = new Date(startDate.start);
+		const currentStart = startDate ? new Date(startDate.start) : false;
 
+		if (currentStart) {
 			const otherBoxWidth = otherBox.offsetWidth;
 			const otherBoxLeft = otherBox.offsetLeft;
 			let newWidth: number;
