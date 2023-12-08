@@ -1,0 +1,290 @@
+ /* Style for the container holding the calendar */
+ .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    padding: 20px;
+    overflow: hidden; /* Hide any overflow */
+  }
+
+  /* Style for the sidebar */
+  .sidebar {
+    flex: 0 0 20%; /* Adjust the width of the sidebar */
+    background-color: #f2f2f2;
+    padding: 0 10px 10px;
+    overflow-y: auto; /* Enable vertical scrollbar if needed */
+  }
+
+  /* Style for the main box containing the days */
+  .mainBox {
+    flex: 0 0 75%; /* Adjust the width of the main box */
+    overflow-x: auto; /* Enable horizontal scrollbar */
+    position:relative;
+
+  }
+
+  /* Style for the row of days */
+  .row {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping of days */
+    width: fit-content; /* Set width to fit content */
+  }
+
+  /* Style for individual day elements */
+  .day {
+    width: 50px; /* Ensure each day occupies an equal width */
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  .task-header{
+    border-bottom: 1px solid #c7c7c7;
+  }
+  /* Style for task days */
+  .taskday {
+    background-color: #dff0d8; /* Change this to your desired task day color */
+    /* Additional styles for task days */
+  }
+  .column-lines-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    height: 100%;
+    overflow: hidden;
+    overflow: clip;
+    contain: strict;
+  }
+  .column-line{
+    height: 100%;
+    position: absolute;
+    border-left: 1px solid #c7c7c7;
+  }
+  .task-row{
+    height: 46px;
+    padding: 2px 5px;
+    border-bottom: 1px solid #c7c7c7;
+  }
+  .sub-task-side p{
+    margin-left: 10px;
+    font-weight: normal;
+  }
+  .task-header,#dateHeader{
+    height: 76px;
+  }
+  .task-box{
+    height:20px;
+    background-color: #062d41;
+    margin-top: 15px;
+    position: relative;
+    display: flex;
+    border-bottom: 1px dotted black; /* Add underline effect */
+    /* You can customize other styles like background-color, border-radius, padding, etc. */
+  }
+
+  /* Tooltip text */
+  .task-box .task-box-text {
+    visibility: hidden;
+    width: auto;
+    height: auto;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 2px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    display: flex;
+    flex-direction: column;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .task-box .task-box-text h6{
+    margin: 2px;
+    padding: 2px;
+  }
+  /* Show the task-box text when hovering over the task-box container */
+  .task-box:hover .task-box-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  .task-box-text span {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    font-size: 12px;
+  }
+
+  .task-box-text span strong {
+    margin-right: 5px;
+    font-weight: bold;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    min-width: 500px;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 5px 20px 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Align items vertically at the center */
+  }
+
+  .task-header p, .task-header button {
+    margin: 0; /* Reset margins for paragraph and anchor */
+    padding: 5px 10px; /* Add padding as needed */
+    text-decoration: none; /* Remove underline from anchor */
+    color: #333; /* Set text color */
+  }
+
+  .task-header button {
+    margin-left: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 15px;
+    margin-right: 30px;
+    text-transform: capitalize;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+  }
+
+  /* Modal title */
+  .modal-title {
+    margin: 0;
+  }
+
+  /* Close button */
+  .close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+  }
+  .btn {
+    background-color: #4c6e97;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+
+  .btn:hover {
+    background-color: #3b5177;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  }
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-body .row {
+    margin-bottom: 15px;
+  }
+
+  .modal-body .label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .modal-body input {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .modal-body input:focus {
+    outline: none;
+    border-color: #3b99fc;
+  }
+  .task-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    background: transparent;
+    z-index: 1; /* Ensure the overlay is above other content */
+  }
+  .task-box:hover::before {
+    background: rgba(0, 0, 0, 0.1); /* Change the background to show the hover area */
+  }
+  .box-modifier {
+    width: 0;
+    transition: width 0.3s; /* Optional: Adding transition for a smoother effect */
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: #575787; /* Change this to the desired color */
+    z-index: 2; /* Ensure the .box-modifier is above the overlay */
+  }
+  .end-date-mod{
+    right: 0;
+  }
+  .start-date-mod{
+    left: 0;
+  }
+  .task-box:hover .box-modifier {
+    width: 3px;
+  }
+  .mid-box{
+    width:100%;
+  }
+  .box-modifier:hover{
+    cursor: col-resize;
+  }
