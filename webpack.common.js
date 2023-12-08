@@ -37,6 +37,11 @@ module.exports = {
 				test: /\.(png|jpg|gif)$/i,
 				type: "asset",
 			},
+			{
+				test: /\.s[ac]ss$/i,
+				include: path.resolve(__dirname, 'src', 'sass'),
+				use: ["style-loader", "css-loader", "sass-loader"],
+			},
 		],
 	},
 };

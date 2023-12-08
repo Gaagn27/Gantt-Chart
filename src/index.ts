@@ -5,7 +5,7 @@ import { createElement } from "./libs/HtmlElement/HtmlHelper";
 import { inputValue } from "./libs/HtmlElement/InputHelper";
 import { Modal } from "./libs/HtmlElement/Modal";
 import { Sidebar } from "./libs/HtmlElement/Sidebar";
-
+import "../src/sass/main.scss";
 //
 // eslint-disable-next-line no-use-before-define
 function isTaskDay(date: Date, tasks: Task[]): boolean {
