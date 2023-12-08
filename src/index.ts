@@ -1,7 +1,7 @@
 import "../src/sass/main.scss";
 
-import { ChartConfigs } from "./inerfaces/ChartConfigs";
-import { Task } from "./inerfaces/Task";
+import { ChartConfigs } from "./interfaces/ChartConfigs";
+import { Task } from "./interfaces/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
 import { inputValue } from "./libs/HtmlElement/InputHelper";

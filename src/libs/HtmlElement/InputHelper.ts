@@ -1,4 +1,4 @@
-import { BaseInput } from "../../inerfaces/html/inputs/BaseInput";
+import { BaseInput } from "../../interfaces/html/inputs/BaseInput";
 import { createElement } from "./HtmlHelper";
 
 class InputHelper {

@@ -1,4 +1,4 @@
-import { Task } from "../../inerfaces/Task";
+import { Task } from "../../interfaces/Task";
 
 export abstract class GanttChart {
 	protected _tasks: Task[];

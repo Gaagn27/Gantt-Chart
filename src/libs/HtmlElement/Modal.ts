@@ -1,5 +1,5 @@
-import { BaseInput } from "../../inerfaces/html/inputs/BaseInput";
-import { ModalConfigs } from "../../inerfaces/html/ModalConfigs";
+import { BaseInput } from "../../interfaces/html/inputs/BaseInput";
+import { ModalConfigs } from "../../interfaces/html/ModalConfigs";
 import { createElement } from "./HtmlHelper";
 import { createInputElement } from "./InputHelper";
 
