@@ -1,10 +1,10 @@
+import { InputTypes } from "../../types/Inputs/InputTypes";
 import { Task } from "../Task";
-import { Input } from "./Input";
 
 type AddTask = (task: Task) => void;
 
 export interface ModalConfigs {
-	inputs: Array<Input>;
+	inputs: Array<InputTypes>;
 	addTask?: AddTask;
 	updateTask?: AddTask;
 }

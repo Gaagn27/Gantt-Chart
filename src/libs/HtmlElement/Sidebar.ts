@@ -1,5 +1,5 @@
-import { SubTask } from "../../inerfaces/SubTask";
-import { Task as TaskInterface } from "../../inerfaces/Task";
+import { SubTask } from "../../interfaces/SubTask";
+import { Task as TaskInterface } from "../../interfaces/Task";
 import { Task } from "../Task";
 import { GanttChart } from "./GanttChart";
 import { createElement } from "./HtmlHelper";

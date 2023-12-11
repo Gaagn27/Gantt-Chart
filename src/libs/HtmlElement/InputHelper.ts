@@ -1,15 +1,16 @@
-import { Input } from "../../inerfaces/html/Input";
+import { InputTypes } from "../../types/Inputs/InputTypes";
 import { createElement } from "./HtmlHelper";
 
 class InputHelper {
-	private readonly input: Input;
+	private readonly input: InputTypes;
 	private inputEl: HTMLElement | undefined;
-	constructor(input: Input) {
+	constructor(input: InputTypes) {
 		this.input = input;
 		this.inputEl = undefined;
 	}
 
 	public createInputElement(): HTMLElement {
+		let selectElement: HTMLSelectElement;
 		switch (this.input.type) {
 			case "textarea":
 				this.inputEl = document.createElement("textarea");
@@ -17,14 +18,41 @@ class InputHelper {
 					this.inputEl.innerText = <string>this.input.value;
 				}
 				break;
+			case "select":
+				selectElement = document.createElement("select");
+
+				this.input.options.forEach((option) => {
+					const optionEL = document.createElement("option");
+					if (typeof option === "string") {
+						optionEL.setAttribute("value", option);
+						optionEL.setAttribute("label", option);
+						if (this.input.value === option) {
+							optionEL.setAttribute("selected", "true");
+						}
+					} else {
+						optionEL.setAttribute("value", option.value);
+						optionEL.setAttribute("label", option.label);
+						if (option.disabled) {
+							optionEL.setAttribute("disabled", option.disabled.toString());
+						}
+						if (this.input.value === option.value) {
+							optionEL.setAttribute("selected", "true");
+						}
+					}
+					selectElement.appendChild(optionEL);
+				});
+				this.inputEl = selectElement;
+
+				// if (this.input.value) {
+				// 	this.inputEl.innerText = <string>this.input.value;
+				// }
+				break;
 			default:
 				this.inputEl = document.createElement("input");
 				if (this.input.value) {
 					this.inputEl.setAttribute("value", <string>this.input.value);
 				}
-				if (this.input.type) {
-					this.inputEl.setAttribute("type", this.input.type);
-				}
+				this.inputEl.setAttribute("type", this.input.type);
 				break;
 		}
 		this.assignAttribute();
@@ -67,7 +95,7 @@ class InputHelper {
 	}
 }
 
-export function createInputElement(input: Input): HTMLElement {
+export function createInputElement(input: InputTypes): HTMLElement {
 	const inputHelper = new InputHelper(input);
 	const wrap = createElement("div", "row");
 	if (input.label) {

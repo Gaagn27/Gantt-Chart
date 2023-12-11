@@ -1,4 +1,4 @@
-import { Task } from "../../inerfaces/Task";
+import { Task } from "../../interfaces/Task";
 import { getDateRange } from "../Date/Date";
 
 export class BoxMover {
