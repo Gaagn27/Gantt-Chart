@@ -26,6 +26,12 @@ export class Modal {
 		const modal = document.getElementById("modal");
 		const overlay = document.getElementById("overlay");
 		const uid = document.querySelector("input[name='_uid']");
+		const optionsEL = document.querySelectorAll(
+			"option[disabled='true']"
+		) as unknown as HTMLOptionElement[];
+		optionsEL.forEach((optionEl) => {
+			optionEl.disabled = false;
+		});
 		if (uid) {
 			uid.remove();
 		}

@@ -4,10 +4,11 @@ import { ChartConfigs } from "./interfaces/ChartConfigs";
 import { Task } from "./interfaces/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
-import { inputValue } from "./libs/HtmlElement/InputHelper";
+import { InputHelper, inputValue } from "./libs/HtmlElement/InputHelper";
 import { Modal } from "./libs/HtmlElement/Modal";
 import { Sidebar } from "./libs/HtmlElement/Sidebar";
-//
+import { InputTypes } from "./types/Inputs/InputTypes";
+
 // eslint-disable-next-line no-use-before-define
 function isTaskDay(date: Date, tasks: Task[]): boolean {
 	return tasks.some((task) => {
@@ -27,6 +28,20 @@ function generateRandomId(length = 16): string {
 	}
 
 	return id;
+}
+function setTasksInputs(inputs: InputTypes[], tasks: Task[]) {
+	inputs.map((input) => {
+		if (input.name === "task") {
+			input.options = tasks.map((task) => ({ label: task.name, value: task.uid }));
+		}
+
+		return input;
+	});
+	const taskSelect: InputTypes | undefined = inputs.find((input) => input.name === "task");
+	if (taskSelect) {
+		const select = new InputHelper(taskSelect);
+		select.updateSelectOptions();
+	}
 }
 // Render calendar
 function renderCalendar(configs: ChartConfigs): void {
@@ -51,13 +66,13 @@ function renderCalendar(configs: ChartConfigs): void {
 	const sidebar: Sidebar = new Sidebar(sideBarEl, tasks);
 	calendar.renderCalender();
 	sidebar.renderTasksSidebar();
-
+	const inputs = configs.modalConfigs.inputs;
+	setTasksInputs(inputs, tasks);
 	Modal.renderModal(configs.modalConfigs);
 	const addTask = document.getElementById("addTask");
 	if (addTask) {
 		addTask.addEventListener("click", () => {
 			const elementsToRemove = document.querySelectorAll(".task-row");
-
 			elementsToRemove.forEach((element) => {
 				element.remove();
 			});
@@ -81,10 +96,10 @@ function renderCalendar(configs: ChartConfigs): void {
 				configs.tasks.push(task);
 			}
 			calendar.updateTasks(configs.tasks);
-			// calendar.renderCalender();
-
 			sidebar.updateTasks(configs.tasks);
+
 			Modal.closeModal();
+			setTasksInputs(inputs, configs.tasks);
 			const form = document.querySelector("form#taskForm") as HTMLFormElement;
 			form.reset();
 			if (mainBox) {

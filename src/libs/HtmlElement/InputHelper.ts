@@ -1,12 +1,23 @@
 import { InputTypes } from "../../types/Inputs/InputTypes";
 import { createElement } from "./HtmlHelper";
 
-class InputHelper {
+export class InputHelper {
 	private readonly input: InputTypes;
 	private inputEl: HTMLElement | undefined;
 	constructor(input: InputTypes) {
 		this.input = input;
 		this.inputEl = undefined;
+	}
+
+	public updateSelectOptions(): void {
+		const selectEl = document.querySelector(
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+			`select[name='${this.input.name}']`
+		) as HTMLSelectElement | undefined;
+		if (selectEl) {
+			selectEl.innerHTML = "";
+			this.addOptionsToSelect(selectEl);
+		}
 	}
 
 	public createInputElement(): HTMLElement {
@@ -21,31 +32,7 @@ class InputHelper {
 			case "select":
 				selectElement = document.createElement("select");
 
-				this.input.options.forEach((option) => {
-					const optionEL = document.createElement("option");
-					if (typeof option === "string") {
-						optionEL.setAttribute("value", option);
-						optionEL.setAttribute("label", option);
-						if (this.input.value === option) {
-							optionEL.setAttribute("selected", "true");
-						}
-					} else {
-						optionEL.setAttribute("value", option.value);
-						optionEL.setAttribute("label", option.label);
-						if (option.disabled) {
-							optionEL.setAttribute("disabled", option.disabled.toString());
-						}
-						if (this.input.value === option.value) {
-							optionEL.setAttribute("selected", "true");
-						}
-					}
-					selectElement.appendChild(optionEL);
-				});
-				this.inputEl = selectElement;
-
-				// if (this.input.value) {
-				// 	this.inputEl.innerText = <string>this.input.value;
-				// }
+				this.inputEl = this.addOptionsToSelect(selectElement);
 				break;
 			default:
 				this.inputEl = document.createElement("input");
@@ -59,6 +46,33 @@ class InputHelper {
 		this.assignClass();
 
 		return this.inputEl;
+	}
+
+	private addOptionsToSelect(selectEL: HTMLSelectElement): HTMLSelectElement {
+		if (this.input.type === "select") {
+			this.input.options.forEach((option) => {
+				const optionEL = document.createElement("option");
+				if (typeof option === "string") {
+					optionEL.setAttribute("value", option);
+					optionEL.setAttribute("label", option);
+					if (this.input.value === option) {
+						optionEL.setAttribute("selected", "true");
+					}
+				} else {
+					optionEL.setAttribute("value", option.value);
+					optionEL.setAttribute("label", option.label);
+					if (option.disabled) {
+						optionEL.setAttribute("disabled", option.disabled.toString());
+					}
+					if (this.input.value === option.value) {
+						optionEL.setAttribute("selected", "true");
+					}
+				}
+				selectEL.appendChild(optionEL);
+			});
+		}
+
+		return selectEL;
 	}
 
 	private assignAttribute(): this {
