@@ -50,6 +50,9 @@ export class InputHelper {
 
 	private addOptionsToSelect(selectEL: HTMLSelectElement): HTMLSelectElement {
 		if (this.input.type === "select") {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			this.input.options.unshift({ label: "Please select Task", value: "" });
 			this.input.options.forEach((option) => {
 				const optionEL = document.createElement("option");
 				if (typeof option === "string") {
@@ -121,7 +124,7 @@ export function createInputElement(input: InputTypes): HTMLElement {
 	return wrap;
 }
 export function inputValue(name: string): string | null {
-	const nameInput = document.querySelector(`input[name='${name}']`) as HTMLInputElement | null;
+	const nameInput = document.querySelector(`[name='${name}']`) as HTMLInputElement | undefined;
 
 	return nameInput ? nameInput.value : null;
 }

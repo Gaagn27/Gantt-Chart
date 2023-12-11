@@ -1,6 +1,7 @@
 import "../src/sass/main.scss";
 
 import { ChartConfigs } from "./interfaces/ChartConfigs";
+import { SubTask } from "./interfaces/SubTask";
 import { Task } from "./interfaces/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
@@ -81,20 +82,40 @@ function renderCalendar(configs: ChartConfigs): void {
 				name: inputValue("name") ?? "",
 				start: inputValue("start") ?? "",
 				end: inputValue("end") ?? "",
+				parentTask: inputValue("task") ?? "",
 				uid: generateRandomId(),
 			};
-			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | null;
-			if (uid) {
-				configs.tasks = configs.tasks.map((taskObj) => {
-					if (taskObj.uid === uid.value) {
-						return task;
-					}
+			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
+			if (!task.parentTask) {
+				if (uid) {
+					configs.tasks = configs.tasks.map((taskObj) => {
+						if (taskObj.uid === uid.value) {
+							return task;
+						}
 
-					return taskObj;
-				});
+						return taskObj;
+					});
+				} else {
+					configs.tasks.push(task);
+				}
 			} else {
-				configs.tasks.push(task);
+				const parentTask = configs.tasks.find((taskObj) => taskObj.uid === task.parentTask);
+				if (uid) {
+					configs.tasks = configs.tasks.map((taskObj) => {
+						if (taskObj.uid === uid.value) {
+							return task;
+						}
+
+						return taskObj;
+					});
+				} else if (parentTask && parentTask.subTasks) {
+					parentTask.subTasks.push(<SubTask>task);
+				} else if (parentTask) {
+					parentTask["subTasks"] = [];
+					parentTask.subTasks.push(<SubTask>task);
+				}
 			}
+
 			calendar.updateTasks(configs.tasks);
 			sidebar.updateTasks(configs.tasks);
 
@@ -128,11 +149,17 @@ const start = startOfMonth.toISOString().slice(0, 10);
 const end = endOfMonth.toISOString().slice(0, 10);
 const tasks = [
 	{
-		name: "New Task",
+		name: "Parent Task 1",
 		start,
 		end,
 		uid: "rsa",
 		subTasks: [{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa" }],
+	},
+	{
+		name: "Parent Task 2",
+		start: "2023-12-07",
+		end: "2024-01-03",
+		uid: "ss",
 	},
 ];
 renderCalendar({
