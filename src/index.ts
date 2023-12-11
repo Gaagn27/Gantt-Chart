@@ -90,7 +90,7 @@ function renderCalendar(configs: ChartConfigs): void {
 				if (uid) {
 					configs.tasks = configs.tasks.map((taskObj) => {
 						if (taskObj.uid === uid.value) {
-							return task;
+							return { ...taskObj, ...task };
 						}
 
 						return taskObj;
