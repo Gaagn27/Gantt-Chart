@@ -1,6 +1,7 @@
 import "../src/sass/main.scss";
 
 import { ChartConfigs } from "./interfaces/ChartConfigs";
+import { SubTask } from "./interfaces/SubTask";
 import { Task } from "./interfaces/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
@@ -31,7 +32,7 @@ function generateRandomId(length = 16): string {
 }
 function setTasksInputs(inputs: InputTypes[], tasks: Task[]) {
 	inputs.map((input) => {
-		if (input.name === "task") {
+		if (input.name === "parentTask") {
 			input.options = tasks.map((task) => ({ label: task.name, value: task.uid }));
 		}
 
@@ -46,7 +47,11 @@ function setTasksInputs(inputs: InputTypes[], tasks: Task[]) {
 // Render calendar
 function renderCalendar(configs: ChartConfigs): void {
 	const containerId: string = configs.id;
-	configs.tasks.map((task) => (task.uid = generateRandomId()));
+	configs.tasks.map((task) => {
+		task.uid = task.uid ?? generateRandomId();
+
+		return task;
+	});
 	const tasks: Task[] = configs.tasks;
 	const container = document.getElementById(containerId);
 	if (!container) {
@@ -81,20 +86,45 @@ function renderCalendar(configs: ChartConfigs): void {
 				name: inputValue("name") ?? "",
 				start: inputValue("start") ?? "",
 				end: inputValue("end") ?? "",
+				parentTask: inputValue("parentTask") ?? "",
 				uid: generateRandomId(),
 			};
-			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | null;
-			if (uid) {
-				configs.tasks = configs.tasks.map((taskObj) => {
-					if (taskObj.uid === uid.value) {
-						return task;
-					}
+			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
+			if (!task.parentTask) {
+				if (uid) {
+					configs.tasks = configs.tasks.map((taskObj) => {
+						if (taskObj.uid === uid.value) {
+							return { ...taskObj, ...task };
+						}
 
-					return taskObj;
-				});
+						return taskObj;
+					});
+				} else {
+					configs.tasks.push(task);
+				}
 			} else {
-				configs.tasks.push(task);
+				const parentTaskIndex = configs.tasks.findIndex(
+					(taskObj) => taskObj.uid === task.parentTask
+				);
+				const parentTask = configs.tasks[parentTaskIndex];
+				if (uid) {
+					configs.tasks[parentTaskIndex].subTasks=parentTask.subTasks?.map((taskObj) => {
+						if (taskObj.uid === uid.value) {
+							console.log( { ...taskObj, ...task })
+							return { ...taskObj, ...task };
+						}
+
+						return taskObj;
+					});
+
+				} else if (parentTask.subTasks) {
+					parentTask.subTasks.push(<SubTask>task);
+				} else {
+					parentTask["subTasks"] = [];
+					parentTask.subTasks.push(<SubTask>task);
+				}
 			}
+
 			calendar.updateTasks(configs.tasks);
 			sidebar.updateTasks(configs.tasks);
 
@@ -128,11 +158,19 @@ const start = startOfMonth.toISOString().slice(0, 10);
 const end = endOfMonth.toISOString().slice(0, 10);
 const tasks = [
 	{
-		name: "New Task",
+		name: "Parent Task 1",
 		start,
 		end,
 		uid: "rsa",
-		subTasks: [{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa" }],
+		subTasks: [
+			{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa", uid: "qee" },
+		],
+	},
+	{
+		name: "Parent Task 2",
+		start: "2023-12-07",
+		end: "2024-01-03",
+		uid: "ss",
 	},
 ];
 renderCalendar({
@@ -161,7 +199,7 @@ renderCalendar({
 				class: "Project",
 			},
 			{
-				name: "task",
+				name: "parentTask",
 				type: "select",
 				options: [
 					{ label: "test", value: "test" },
