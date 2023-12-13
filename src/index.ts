@@ -32,7 +32,7 @@ function generateRandomId(length = 16): string {
 }
 function setTasksInputs(inputs: InputTypes[], tasks: Task[]) {
 	inputs.map((input) => {
-		if (input.name === "task") {
+		if (input.name === "parentTask") {
 			input.options = tasks.map((task) => ({ label: task.name, value: task.uid }));
 		}
 
@@ -47,7 +47,11 @@ function setTasksInputs(inputs: InputTypes[], tasks: Task[]) {
 // Render calendar
 function renderCalendar(configs: ChartConfigs): void {
 	const containerId: string = configs.id;
-	configs.tasks.map((task) => (task.uid = generateRandomId()));
+	configs.tasks.map((task) => {
+		task.uid = task.uid ?? generateRandomId();
+
+		return task;
+	});
 	const tasks: Task[] = configs.tasks;
 	const container = document.getElementById(containerId);
 	if (!container) {
@@ -82,7 +86,7 @@ function renderCalendar(configs: ChartConfigs): void {
 				name: inputValue("name") ?? "",
 				start: inputValue("start") ?? "",
 				end: inputValue("end") ?? "",
-				parentTask: inputValue("task") ?? "",
+				parentTask: inputValue("parentTask") ?? "",
 				uid: generateRandomId(),
 			};
 			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
@@ -99,21 +103,26 @@ function renderCalendar(configs: ChartConfigs): void {
 					configs.tasks.push(task);
 				}
 			} else {
-				const parentTask = configs.tasks.find((taskObj) => taskObj.uid === task.parentTask);
+				const parentTaskIndex = configs.tasks.findIndex(
+					(taskObj) => taskObj.uid === task.parentTask
+				);
+				const parentTask = configs.tasks[parentTaskIndex];
 				if (uid) {
-					configs.tasks = configs.tasks.map((taskObj) => {
+					parentTask.subTasks?.map((taskObj) => {
 						if (taskObj.uid === uid.value) {
-							return task;
+							return { ...taskObj, ...task };
 						}
 
 						return taskObj;
 					});
-				} else if (parentTask && parentTask.subTasks) {
+					configs.tasks[parentTaskIndex] = parentTask;
+				} else if (parentTask.subTasks) {
 					parentTask.subTasks.push(<SubTask>task);
-				} else if (parentTask) {
+				} else {
 					parentTask["subTasks"] = [];
 					parentTask.subTasks.push(<SubTask>task);
 				}
+				console.log(configs.tasks,parentTask);
 			}
 
 			calendar.updateTasks(configs.tasks);
@@ -153,7 +162,9 @@ const tasks = [
 		start,
 		end,
 		uid: "rsa",
-		subTasks: [{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa" }],
+		subTasks: [
+			{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa", uid: "qee" },
+		],
 	},
 	{
 		name: "Parent Task 2",
@@ -188,7 +199,7 @@ renderCalendar({
 				class: "Project",
 			},
 			{
-				name: "task",
+				name: "parentTask",
 				type: "select",
 				options: [
 					{ label: "test", value: "test" },
