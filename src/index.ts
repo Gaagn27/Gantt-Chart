@@ -108,21 +108,21 @@ function renderCalendar(configs: ChartConfigs): void {
 				);
 				const parentTask = configs.tasks[parentTaskIndex];
 				if (uid) {
-					parentTask.subTasks?.map((taskObj) => {
+					configs.tasks[parentTaskIndex].subTasks=parentTask.subTasks?.map((taskObj) => {
 						if (taskObj.uid === uid.value) {
+							console.log( { ...taskObj, ...task })
 							return { ...taskObj, ...task };
 						}
 
 						return taskObj;
 					});
-					configs.tasks[parentTaskIndex] = parentTask;
+
 				} else if (parentTask.subTasks) {
 					parentTask.subTasks.push(<SubTask>task);
 				} else {
 					parentTask["subTasks"] = [];
 					parentTask.subTasks.push(<SubTask>task);
 				}
-				console.log(configs.tasks,parentTask);
 			}
 
 			calendar.updateTasks(configs.tasks);
