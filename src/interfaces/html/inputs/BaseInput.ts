@@ -3,4 +3,5 @@ export interface BaseInput {
 	type: string;
 	[key: string]: string | number | boolean | unknown;
 	options?: unknown[];
+	validations?: string[];
 }

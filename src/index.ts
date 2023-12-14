@@ -8,6 +8,7 @@ import { createElement } from "./libs/HtmlElement/HtmlHelper";
 import { InputHelper, inputValue } from "./libs/HtmlElement/InputHelper";
 import { Modal } from "./libs/HtmlElement/Modal";
 import { Sidebar } from "./libs/HtmlElement/Sidebar";
+import { Validations } from "./libs/validations";
 import { InputTypes } from "./types/Inputs/InputTypes";
 
 // eslint-disable-next-line no-use-before-define
@@ -77,10 +78,6 @@ function renderCalendar(configs: ChartConfigs): void {
 	const addTask = document.getElementById("addTask");
 	if (addTask) {
 		addTask.addEventListener("click", () => {
-			const elementsToRemove = document.querySelectorAll(".task-row");
-			elementsToRemove.forEach((element) => {
-				element.remove();
-			});
 			const mainBox = document.getElementById("mainBox");
 			const task: Task = {
 				name: inputValue("name") ?? "",
@@ -89,55 +86,71 @@ function renderCalendar(configs: ChartConfigs): void {
 				parentTask: inputValue("parentTask") ?? "",
 				uid: generateRandomId(),
 			};
-			const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
-			if (!task.parentTask) {
-				if (uid) {
-					configs.tasks = configs.tasks.map((taskObj) => {
-						if (taskObj.uid === uid.value) {
-							return { ...taskObj, ...task };
-						}
+			document.querySelectorAll("span.error").forEach((element) => {
+				element.remove();
+			});
+			const validation = new Validations(task, inputs);
+			validation.errors().forEach((error) => {
+				const errorMessage = error.messages;
+				const errorEl = createElement("span", "error", errorMessage.join());
+				const inputEl = document.querySelector(`[name='${error.field}']`) as HTMLElement;
+				if (inputEl.parentNode) {
+					inputEl.parentNode.appendChild(errorEl);
+				}
+			});
+			if (validation.errors().length === 0) {
+				const elementsToRemove = document.querySelectorAll(".task-row");
+				elementsToRemove.forEach((element) => {
+					element.remove();
+				});
+				const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
+				if (!task.parentTask) {
+					if (uid) {
+						configs.tasks = configs.tasks.map((taskObj) => {
+							if (taskObj.uid === uid.value) {
+								return { ...taskObj, ...task };
+							}
 
-						return taskObj;
-					});
+							return taskObj;
+						});
+					} else {
+						configs.tasks.push(task);
+					}
 				} else {
-					configs.tasks.push(task);
+					const parentTaskIndex = configs.tasks.findIndex(
+						(taskObj) => taskObj.uid === task.parentTask
+					);
+					const parentTask = configs.tasks[parentTaskIndex];
+					if (uid) {
+						configs.tasks[parentTaskIndex].subTasks = parentTask.subTasks?.map((taskObj) => {
+							if (taskObj.uid === uid.value) {
+								return { ...taskObj, ...task };
+							}
+
+							return taskObj;
+						});
+					} else if (parentTask.subTasks) {
+						parentTask.subTasks.push(<SubTask>task);
+					} else {
+						parentTask["subTasks"] = [];
+						parentTask.subTasks.push(<SubTask>task);
+					}
 				}
-			} else {
-				const parentTaskIndex = configs.tasks.findIndex(
-					(taskObj) => taskObj.uid === task.parentTask
-				);
-				const parentTask = configs.tasks[parentTaskIndex];
-				if (uid) {
-					configs.tasks[parentTaskIndex].subTasks=parentTask.subTasks?.map((taskObj) => {
-						if (taskObj.uid === uid.value) {
-							console.log( { ...taskObj, ...task })
-							return { ...taskObj, ...task };
-						}
 
-						return taskObj;
-					});
+				calendar.updateTasks(configs.tasks);
+				sidebar.updateTasks(configs.tasks);
 
-				} else if (parentTask.subTasks) {
-					parentTask.subTasks.push(<SubTask>task);
-				} else {
-					parentTask["subTasks"] = [];
-					parentTask.subTasks.push(<SubTask>task);
-				}
-			}
-
-			calendar.updateTasks(configs.tasks);
-			sidebar.updateTasks(configs.tasks);
-
-			Modal.closeModal();
-			setTasksInputs(inputs, configs.tasks);
-			const form = document.querySelector("form#taskForm") as HTMLFormElement;
-			form.reset();
-			if (mainBox) {
-				if (configs.modalConfigs.addTask) {
-					configs.modalConfigs.addTask(task);
-				}
-				if (configs.modalConfigs.updateTask) {
-					configs.modalConfigs.updateTask(task);
+				Modal.closeModal();
+				setTasksInputs(inputs, configs.tasks);
+				const form = document.querySelector("form#taskForm") as HTMLFormElement;
+				form.reset();
+				if (mainBox) {
+					if (configs.modalConfigs.addTask) {
+						configs.modalConfigs.addTask(task);
+					}
+					if (configs.modalConfigs.updateTask) {
+						configs.modalConfigs.updateTask(task);
+					}
 				}
 			}
 		});
@@ -184,6 +197,7 @@ renderCalendar({
 				type: "text",
 				label: "Project Name",
 				placeholder: "Project Name",
+				validations: ["required", "min:3"],
 				class: "Project",
 			},
 			{
@@ -191,12 +205,14 @@ renderCalendar({
 				type: "date",
 				label: "Project Start Date",
 				class: "Project",
+				validations: ["required"],
 			},
 			{
 				name: "end",
 				type: "date",
 				label: "Project End Date",
 				class: "Project",
+				validations: ["required"],
 			},
 			{
 				name: "parentTask",
