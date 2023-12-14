@@ -116,7 +116,9 @@ export class Calender extends GanttChart {
 		const leftBox = document.getElementById(Date.parse(task.start).toString());
 		const leftCords = leftBox?.offsetLeft ?? 0;
 		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft ?? 0;
-		const width: number = rightBox - leftCords + 50;
+		const dayEl = document.querySelector("#dateHeader .day") as HTMLElement;
+
+		const width: number = rightBox - leftCords + dayEl.offsetWidth;
 		taskBox.style.left = `${leftCords}px`;
 		taskBox.style.width = `${width}px`;
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions

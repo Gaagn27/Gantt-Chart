@@ -125,7 +125,7 @@ export class BoxMover {
 		const otherBoxLeft = otherBox.offsetLeft;
 		let newWidth: number;
 		const offsetWidth = otherBoxWidth % dayWidth;
-		if (offsetWidth < 25) {
+		if (offsetWidth < dayWidth / 2) {
 			newWidth = otherBoxWidth - (otherBoxWidth % dayWidth);
 		} else {
 			newWidth = otherBoxWidth - offsetWidth + dayWidth;
@@ -157,7 +157,7 @@ export class BoxMover {
 			let newWidth: number;
 			let newLeft: number;
 			const offsetWidth = otherBoxWidth % dayWidth;
-			if (offsetWidth < 25) {
+			if (offsetWidth < dayWidth / 2) {
 				newLeft = otherBoxLeft + (otherBoxWidth % dayWidth);
 				newWidth = otherBoxWidth - (otherBoxWidth % dayWidth);
 			} else {
