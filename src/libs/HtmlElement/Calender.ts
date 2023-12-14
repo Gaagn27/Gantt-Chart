@@ -1,5 +1,5 @@
-import { SubTask } from "../../interfaces/SubTask";
-import { Task as TaskInterface } from "../../interfaces/Task";
+import { SubTask } from "../../interfaces/task/SubTask";
+import { Task as TaskInterface } from "../../interfaces/task/Task";
 import { getDateRange, nextDay } from "../Date/Date";
 import { Task } from "../Task";
 import { BoxMover } from "./BoxMover";

@@ -1,5 +1,5 @@
 import { DateRange } from "../../interfaces/date/DateRange";
-import { Task } from "../../interfaces/Task";
+import { Task } from "../../interfaces/task/Task";
 
 export function getEarliestDate(tasks: Task[]): Date {
 	const latestEndDate = new Date(Math.min(...tasks.map((t) => new Date(t.start).getTime())));

@@ -1,4 +1,4 @@
-import { Task as TaskInterface } from "../../interfaces/Task";
+import { Task as TaskInterface } from "../../interfaces/task/Task";
 import { createElement } from "../HtmlElement/HtmlHelper";
 import { Modal } from "../HtmlElement/Modal";
 
