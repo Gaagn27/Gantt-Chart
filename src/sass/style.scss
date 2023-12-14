@@ -33,10 +33,11 @@
 
   /* Style for individual day elements */
   .day {
-    width: 50px; /* Ensure each day occupies an equal width */
+    //width: 50px;
     border: 1px solid #ccc;
     text-align: center;
     padding: 10px;
+    flex: 1;
     box-sizing: border-box;
   }
   .task-header{
