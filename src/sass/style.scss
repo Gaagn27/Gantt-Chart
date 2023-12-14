@@ -230,6 +230,7 @@
 
   .modal-body .row {
     margin-bottom: 15px;
+    flex-direction: column;
   }
 
   .modal-body .label {
@@ -287,4 +288,8 @@
   }
   .box-modifier:hover{
     cursor: col-resize;
+  }
+  .task-form .error{
+    font-size: .8em;
+    color: #b54b4b;
   }
