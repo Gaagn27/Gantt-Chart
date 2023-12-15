@@ -15,5 +15,8 @@ type DateInput = Omit<BaseInput, "options"> & {
 type TextAreaInput = Omit<BaseInput, "options"> & {
 	type: "textarea";
 };
+type NumberInput = Omit<BaseInput, "options"> & {
+	type: "number";
+};
 
-export type InputTypes = SelectInput | TextInput | TextAreaInput | DateInput;
+export type InputTypes = SelectInput | TextInput | TextAreaInput | DateInput | NumberInput;

@@ -1,8 +1,8 @@
 import "../src/sass/main.scss";
 
 import { ChartConfigs } from "./interfaces/ChartConfigs";
-import { SubTask } from "./interfaces/SubTask";
-import { Task } from "./interfaces/Task";
+import { SubTask } from "./interfaces/task/SubTask";
+import { Task } from "./interfaces/task/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
 import { InputHelper, inputValue } from "./libs/HtmlElement/InputHelper";
@@ -84,6 +84,7 @@ function renderCalendar(configs: ChartConfigs): void {
 				start: inputValue("start") ?? "",
 				end: inputValue("end") ?? "",
 				parentTask: inputValue("parentTask") ?? "",
+				completion: inputValue("completion") ?? "",
 				uid: generateRandomId(),
 			};
 			document.querySelectorAll("span.error").forEach((element) => {
@@ -174,9 +175,17 @@ const tasks = [
 		name: "Parent Task 1",
 		start,
 		end,
+		completion: 10,
 		uid: "rsa",
 		subTasks: [
-			{ name: "Task 2", start: "2023-12-03", end: "2023-12-08", parentTask: "rsa", uid: "qee" },
+			{
+				name: "Task 2",
+				start: "2023-12-03",
+				end: "2023-12-08",
+				parentTask: "rsa",
+				uid: "qee",
+				completion: 10,
+			},
 		],
 	},
 	{
@@ -184,6 +193,7 @@ const tasks = [
 		start: "2023-12-07",
 		end: "2024-01-03",
 		uid: "ss",
+		completion: 0,
 	},
 ];
 renderCalendar({
@@ -215,6 +225,15 @@ renderCalendar({
 				validations: ["required"],
 			},
 			{
+				name: "completion",
+				type: "number",
+				label: "Project Completion",
+				minimum: 0,
+				maximum: 100,
+				class: "Project",
+				validations: ["required"],
+			},
+			{
 				name: "parentTask",
 				type: "select",
 				options: [
@@ -227,5 +246,5 @@ renderCalendar({
 	},
 });
 function addTask(task: Task) {
-	console.log(task,'for user');
+	console.log(task, "for user");
 }

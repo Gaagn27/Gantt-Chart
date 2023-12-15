@@ -1,5 +1,5 @@
 import { InputTypes } from "../../types/Inputs/InputTypes";
-import { Task } from "../Task";
+import { Task } from "../task/Task";
 
 type AddTask = (task: Task) => void;
 

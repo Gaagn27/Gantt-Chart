@@ -1,5 +1,5 @@
-import { SubTask } from "../../interfaces/SubTask";
-import { Task } from "../../interfaces/Task";
+import { SubTask } from "../../interfaces/task/SubTask";
+import { Task } from "../../interfaces/task/Task";
 import { Errors } from "../../interfaces/validtions/Errors";
 import { InputTypes } from "../../types/Inputs/InputTypes";
 
@@ -19,7 +19,7 @@ export class Validations {
 	}
 
 	public min(key: string, length: number): void {
-		const value = this.task[key];
+		const value = this.task[key] as string;
 		if (!value || value.length <= length) {
 			this._addError(key, `the ${key} field must be at least ${length}`);
 		}

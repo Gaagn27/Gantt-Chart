@@ -1,5 +1,5 @@
-import { SubTask } from "../../interfaces/SubTask";
-import { Task as TaskInterface } from "../../interfaces/Task";
+import { SubTask } from "../../interfaces/task/SubTask";
+import { Task as TaskInterface } from "../../interfaces/task/Task";
 import { getDateRange, nextDay } from "../Date/Date";
 import { Task } from "../Task";
 import { BoxMover } from "./BoxMover";
@@ -88,9 +88,13 @@ export class Calender extends GanttChart {
 
 	private _createTaskBox(task: TaskInterface): HTMLElement {
 		const taskBox = createElement("div", "task-box", "");
+		const progressEl = createElement("div", "progress");
 		if (task.uid) {
 			taskBox.setAttribute("data-uid", <string>task.uid);
+			taskBox.appendChild(progressEl);
+			progressEl.style.width = `${task.completion}%`;
 		}
+
 		taskBox.style.position = "absolute";
 
 		return taskBox;

@@ -1,5 +1,5 @@
 import { ModalConfigs } from "./html/ModalConfigs";
-import { Task } from "./Task";
+import { Task } from "./task/Task";
 
 export interface ChartConfigs {
 	id: string;
