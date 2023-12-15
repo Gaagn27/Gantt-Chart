@@ -23,7 +23,7 @@ export class Task {
 		}
 		for (const taskKey in task) {
 			const input = form.elements.namedItem(taskKey);
-			if (input && typeof task[taskKey] === "string") {
+			if (input && (typeof task[taskKey] === "string" || typeof task[taskKey] === "number")) {
 				(input as HTMLInputElement).value = <string>task[taskKey];
 			}
 		}
