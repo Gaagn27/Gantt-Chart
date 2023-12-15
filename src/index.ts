@@ -123,13 +123,14 @@ function renderCalendar(configs: ChartConfigs): void {
 					);
 					const parentTask = configs.tasks[parentTaskIndex];
 					if (uid) {
-						configs.tasks[parentTaskIndex].subTasks = parentTask.subTasks?.map((taskObj) => {
-							if (taskObj.uid === uid.value) {
-								return { ...taskObj, ...task };
-							}
+						configs.tasks[parentTaskIndex].subTasks = parentTask.subTasks?.map((taskObj: SubTask) => {
+								if (taskObj.uid === uid.value) {
+									return { ...taskObj, ...task };
+								}
 
-							return taskObj;
-						});
+								return taskObj;
+							}
+						);
 					} else if (parentTask.subTasks) {
 						parentTask.subTasks.push(<SubTask>task);
 					} else {
