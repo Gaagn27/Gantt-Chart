@@ -1,4 +1,5 @@
 import { Task } from "../../interfaces/task/Task";
+import { Data } from "../Data";
 import { getDateRange } from "../Date/Date";
 
 export class BoxMover {
@@ -65,13 +66,13 @@ export class BoxMover {
 
 	private mouseDown(event: MouseEvent) {
 		this.clickedEl = event.target as HTMLElement;
+
 		if (this.clickedEl.classList.contains("end-date-mod")) {
 			this.isMouseDown = true;
 			this.box = this.clickedEl.parentNode as HTMLElement;
 
 			this.boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
-
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
 				this.modifiedWidth(e, this.boxClientX, this.boxWidth)
 			);
@@ -146,11 +147,9 @@ export class BoxMover {
 
 	private adjustStartDate(clickedEl: HTMLElement): void {
 		const dayWidth = this.dayWidth();
-
 		const otherBox = clickedEl.parentNode as HTMLElement;
-		const startDate = this._tasks.find((task) => task.uid === otherBox.dataset.uid);
+		const startDate = new Data().findObj<Task[]>(this._tasks, "uid", <string>otherBox.dataset.uid);
 		const currentStart = startDate ? new Date(startDate.start) : false;
-
 		if (currentStart) {
 			const otherBoxWidth = otherBox.offsetWidth;
 			const otherBoxLeft = otherBox.offsetLeft;
