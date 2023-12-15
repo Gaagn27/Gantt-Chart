@@ -77,14 +77,23 @@
   }
   .task-box{
     height:20px;
-    background-color: #062d41;
+    background-color: rgba(5, 38, 104, 0.75);;
     margin-top: 15px;
     position: relative;
     display: flex;
-    border-bottom: 1px dotted black; /* Add underline effect */
     /* You can customize other styles like background-color, border-radius, padding, etc. */
   }
-
+ .progress {
+   height: 100%;
+   background-color: rgb(5, 38, 104); /* Change the color of the progress bar */
+   transition: width 0.5s ease-in-out; /* Smooth transition animation */
+ }
+ .sub-task-row .task-box{
+    background-color: rgba(16, 90, 22, 0.75);;
+  }
+ .sub-task-row .progress {
+   background-color: rgb(16, 90, 22); /* Change the color of the progress bar */
+ }
   /* Tooltip text */
   .task-box .task-box-text {
     visibility: hidden;
@@ -105,6 +114,7 @@
     opacity: 0;
     transition: opacity 0.3s;
   }
+
   .task-box .task-box-text h6{
     margin: 2px;
     padding: 2px;
