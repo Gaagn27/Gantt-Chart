@@ -175,7 +175,7 @@ const tasks = [
 		name: "Parent Task 1",
 		start,
 		end,
-		completion: 0,
+		completion: 10,
 		uid: "rsa",
 		subTasks: [
 			{
@@ -184,7 +184,7 @@ const tasks = [
 				end: "2023-12-08",
 				parentTask: "rsa",
 				uid: "qee",
-				completion: 0,
+				completion: 10,
 			},
 		],
 	},
@@ -221,6 +221,15 @@ renderCalendar({
 				name: "end",
 				type: "date",
 				label: "Project End Date",
+				class: "Project",
+				validations: ["required"],
+			},
+			{
+				name: "completion",
+				type: "number",
+				label: "Project Completion",
+				minimum: 0,
+				maximum: 100,
 				class: "Project",
 				validations: ["required"],
 			},
