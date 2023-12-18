@@ -180,9 +180,25 @@ const tasks = [
 		uid: "rsa",
 		subTasks: [
 			{
-				name: "Task 2",
+				name: "sub task 1",
 				start: "2023-12-03",
 				end: "2023-12-08",
+				parentTask: "rsa",
+				uid: "qee",
+				completion: 20,
+			},
+			{
+				name: "sub task 3",
+				start: "2023-12-04",
+				end: "2023-12-08",
+				parentTask: "rsa",
+				uid: "qee",
+				completion: 30,
+			},
+			{
+				name: "sub task 5",
+				start: "2023-12-13",
+				end: "2023-12-18",
 				parentTask: "rsa",
 				uid: "qee",
 				completion: 10,
