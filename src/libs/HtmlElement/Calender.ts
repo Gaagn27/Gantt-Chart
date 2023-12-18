@@ -112,11 +112,14 @@ export class Calender extends GanttChart {
 			taskBox.classList.add("sub-task-row");
 		}
 		row.style.width = `${String(getElementFullWidth(this._container))}px`;
-		taskBox.appendChild(this._createTooltip(task));
+		const tooltip = this._createTooltip(task);
+		taskBox.appendChild(tooltip);
 		taskBox.appendChild(startDateModifier);
 		taskBox.appendChild(endDateModifier);
 		taskBox.appendChild(midBox);
-
+		taskBox.addEventListener("mouseover", (event: MouseEvent): void => {
+			tooltip.style.left = `${event.offsetX}px`;
+		});
 		const leftBox = document.getElementById(Date.parse(task.start).toString());
 		const leftCords = leftBox?.offsetLeft ?? 0;
 		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft ?? 0;
