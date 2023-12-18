@@ -3,7 +3,7 @@ import { SubTask } from "../../interfaces/task/SubTask";
 import { Task } from "../../interfaces/task/Task";
 import { Validations } from "../validations";
 import { Calender } from "./Calender";
-import { createElement } from "./HtmlHelper";
+import { createElement, removeElements } from "./HtmlHelper";
 import { inputValue } from "./InputHelper";
 import { Modal } from "./Modal";
 import { SelectOptionsHelper } from "./SelectOptionsHelper";
@@ -73,37 +73,38 @@ export class RenderCalender {
 		new SelectOptionsHelper(inputs).setTasksInputs("predecessor", taskOptions);
 	}
 
+	private _validate(task: Task): boolean {
+		const inputs = this._configs.modalConfigs.inputs;
+
+		removeElements(document.querySelectorAll("span.error"));
+		const validation = new Validations(task, inputs);
+		validation.errors().forEach((error) => {
+			const errorMessage = error.messages;
+			const errorEl = createElement("span", "error", errorMessage.join());
+			const inputEl = document.querySelector(`[name='${error.field}']`) as HTMLElement;
+			if (inputEl.parentNode) {
+				inputEl.parentNode.appendChild(errorEl);
+			}
+		});
+
+		return validation.errors().length === 0;
+	}
+
 	private _addTask() {
 		const addTask = document.getElementById("addTask");
 		if (addTask) {
 			addTask.addEventListener("click", () => {
-				const mainBox = document.getElementById("mainBox");
 				const task: Task = {
 					name: inputValue("name") ?? "",
 					start: inputValue("start") ?? "",
 					end: inputValue("end") ?? "",
 					parentTask: inputValue("parentTask") ?? "",
 					completion: inputValue("completion") ?? "",
-					uid: this.generateRandomId(),
+					uid: inputValue("_uid") ?? this.generateRandomId(),
 				};
-				document.querySelectorAll("span.error").forEach((element) => {
-					element.remove();
-				});
-				const inputs = this._configs.modalConfigs.inputs;
-				const validation = new Validations(task, inputs);
-				validation.errors().forEach((error) => {
-					const errorMessage = error.messages;
-					const errorEl = createElement("span", "error", errorMessage.join());
-					const inputEl = document.querySelector(`[name='${error.field}']`) as HTMLElement;
-					if (inputEl.parentNode) {
-						inputEl.parentNode.appendChild(errorEl);
-					}
-				});
-				if (validation.errors().length === 0) {
-					const elementsToRemove = document.querySelectorAll(".task-row");
-					elementsToRemove.forEach((element) => {
-						element.remove();
-					});
+
+				if (this._validate(task)) {
+					removeElements(document.querySelectorAll(".task-row"));
 					const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
 					if (!task.parentTask) {
 						if (uid) {
@@ -123,7 +124,8 @@ export class RenderCalender {
 						);
 						const parentTask = this._configs.tasks[parentTaskIndex];
 						if (uid) {
-							this._configs.tasks[parentTaskIndex].subTasks = parentTask.subTasks?.map((taskObj: SubTask) => {
+							this._configs.tasks[parentTaskIndex].subTasks = parentTask.subTasks?.map(
+								(taskObj: SubTask) => {
 									if (taskObj.uid === uid.value) {
 										return { ...taskObj, ...task };
 									}
@@ -149,13 +151,11 @@ export class RenderCalender {
 					this._setTaskOptions();
 					const form = document.querySelector("form#taskForm") as HTMLFormElement;
 					form.reset();
-					if (mainBox) {
-						if (this._configs.modalConfigs.addTask) {
-							this._configs.modalConfigs.addTask(task);
-						}
-						if (this._configs.modalConfigs.updateTask) {
-							this._configs.modalConfigs.updateTask(task);
-						}
+					if (this._configs.modalConfigs.addTask) {
+						this._configs.modalConfigs.addTask(task);
+					}
+					if (this._configs.modalConfigs.updateTask) {
+						this._configs.modalConfigs.updateTask(task);
 					}
 				}
 			});
