@@ -5,11 +5,11 @@ import { SubTask } from "./interfaces/task/SubTask";
 import { Task } from "./interfaces/task/Task";
 import { Calender } from "./libs/HtmlElement/Calender";
 import { createElement } from "./libs/HtmlElement/HtmlHelper";
-import { InputHelper, inputValue } from "./libs/HtmlElement/InputHelper";
+import { inputValue } from "./libs/HtmlElement/InputHelper";
 import { Modal } from "./libs/HtmlElement/Modal";
+import { SelectOptionsHelper } from "./libs/HtmlElement/SelectOptionsHelper";
 import { Sidebar } from "./libs/HtmlElement/Sidebar";
 import { Validations } from "./libs/validations";
-import { InputTypes } from "./types/Inputs/InputTypes";
 
 // eslint-disable-next-line no-use-before-define
 function isTaskDay(date: Date, tasks: Task[]): boolean {
@@ -31,20 +31,7 @@ function generateRandomId(length = 16): string {
 
 	return id;
 }
-function setTasksInputs(inputs: InputTypes[], tasks: Task[]) {
-	inputs.map((input) => {
-		if (input.name === "parentTask") {
-			input.options = tasks.map((task) => ({ label: task.name, value: task.uid }));
-		}
 
-		return input;
-	});
-	const taskSelect: InputTypes | undefined = inputs.find((input) => input.name === "task");
-	if (taskSelect) {
-		const select = new InputHelper(taskSelect);
-		select.updateSelectOptions();
-	}
-}
 // Render calendar
 function renderCalendar(configs: ChartConfigs): void {
 	const containerId: string = configs.id;
@@ -73,7 +60,11 @@ function renderCalendar(configs: ChartConfigs): void {
 	calendar.renderCalender();
 	sidebar.renderTasksSidebar();
 	const inputs = configs.modalConfigs.inputs;
-	setTasksInputs(inputs, tasks);
+	// setTasksInputs(inputs, tasks);
+	const taskOptions = tasks
+		.filter((task) => task.uid)
+		.map((task) => ({ label: task.name, value: task.uid }));
+	new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
 	Modal.renderModal(configs.modalConfigs);
 	const addTask = document.getElementById("addTask");
 	if (addTask) {
@@ -143,7 +134,10 @@ function renderCalendar(configs: ChartConfigs): void {
 				sidebar.updateTasks(configs.tasks);
 
 				Modal.closeModal();
-				setTasksInputs(inputs, configs.tasks);
+				const taskOptions = tasks
+					.filter((task) => task.uid)
+					.map((task) => ({ label: task.name, value: task.uid }));
+				new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
 				const form = document.querySelector("form#taskForm") as HTMLFormElement;
 				form.reset();
 				if (mainBox) {
@@ -253,11 +247,22 @@ renderCalendar({
 			{
 				name: "parentTask",
 				type: "select",
-				options: [
-					{ label: "test", value: "test" },
-					{ label: "disable", value: "disabled", disabled: true },
-				],
+				options: [],
 				label: "Tasks",
+			},
+			{
+				name: "successor",
+				type: "select",
+				options: [],
+				multiple: true,
+				label: "Successor",
+			},
+			{
+				name: "predecessor",
+				type: "select",
+				options: [],
+				multiple: true,
+				label: "Predecessor",
 			},
 		],
 	},
