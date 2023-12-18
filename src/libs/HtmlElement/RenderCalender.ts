@@ -100,7 +100,7 @@ export class RenderCalender {
 					end: inputValue("end") ?? "",
 					parentTask: inputValue("parentTask") ?? "",
 					completion: inputValue("completion") ?? "",
-					uid: inputValue("_uid") ?? this.generateRandomId(),
+					uid: this.generateRandomId(),
 				};
 
 				if (this._validate(task)) {
