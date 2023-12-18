@@ -11,6 +11,9 @@ import { Sidebar } from "./Sidebar";
 
 export class RenderCalender {
 	private readonly _configs: ChartConfigs;
+	private _calendar: Calender | undefined;
+	private _sidebar: Sidebar | undefined;
+	private _tasks: Task[] = [];
 	constructor(config: ChartConfigs) {
 		this._configs = config;
 	}
@@ -38,7 +41,7 @@ export class RenderCalender {
 
 			return task;
 		});
-		const tasks: Task[] = this._configs.tasks;
+		this._tasks = this._configs.tasks;
 
 		container.classList.add("container");
 
@@ -50,19 +53,27 @@ export class RenderCalender {
 		container.appendChild(mainBox);
 		mainBox.id = "mainBox";
 		// Render row with day numbers
-		const calendar: Calender = new Calender(mainBox, tasks);
-		const sidebar: Sidebar = new Sidebar(sideBarEl, tasks);
-		calendar.renderCalender();
-		sidebar.renderTasksSidebar();
+		this._calendar = new Calender(mainBox, this._tasks);
+		this._sidebar = new Sidebar(sideBarEl, this._tasks);
+		this._calendar.renderCalender();
+		this._sidebar.renderTasksSidebar();
+		this._setTaskOptions();
+		Modal.renderModal(this._configs.modalConfigs);
+		this._addTask();
+	}
+
+	private _setTaskOptions() {
 		const inputs = this._configs.modalConfigs.inputs;
-		// setTasksInputs(inputs, tasks);
-		const taskOptions = tasks
+
+		const taskOptions = this._tasks
 			.filter((task) => task.uid)
 			.map((task) => ({ label: task.name, value: task.uid }));
 		new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
 		new SelectOptionsHelper(inputs).setTasksInputs("successor", taskOptions);
 		new SelectOptionsHelper(inputs).setTasksInputs("predecessor", taskOptions);
-		Modal.renderModal(this._configs.modalConfigs);
+	}
+
+	private _addTask() {
 		const addTask = document.getElementById("addTask");
 		if (addTask) {
 			addTask.addEventListener("click", () => {
@@ -78,6 +89,7 @@ export class RenderCalender {
 				document.querySelectorAll("span.error").forEach((element) => {
 					element.remove();
 				});
+				const inputs = this._configs.modalConfigs.inputs;
 				const validation = new Validations(task, inputs);
 				validation.errors().forEach((error) => {
 					const errorMessage = error.messages;
@@ -126,17 +138,15 @@ export class RenderCalender {
 							parentTask.subTasks.push(<SubTask>task);
 						}
 					}
-
-					calendar.updateTasks(this._configs.tasks);
-					sidebar.updateTasks(this._configs.tasks);
+					if (this._calendar) {
+						this._calendar.updateTasks(this._configs.tasks);
+					}
+					if (this._sidebar) {
+						this._sidebar.updateTasks(this._configs.tasks);
+					}
 
 					Modal.closeModal();
-					const taskOptions = tasks
-						.filter((task) => task.uid)
-						.map((task) => ({ label: task.name, value: task.uid }));
-					new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
-					new SelectOptionsHelper(inputs).setTasksInputs("successor", taskOptions);
-					new SelectOptionsHelper(inputs).setTasksInputs("predecessor", taskOptions);
+					this._setTaskOptions();
 					const form = document.querySelector("form#taskForm") as HTMLFormElement;
 					form.reset();
 					if (mainBox) {
