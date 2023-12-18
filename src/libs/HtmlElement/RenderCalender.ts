@@ -4,7 +4,7 @@ import { Task } from "../../interfaces/task/Task";
 import { Validations } from "../validations";
 import { Calender } from "./Calender";
 import { createElement, removeElements } from "./HtmlHelper";
-import { inputValue } from "./InputHelper";
+import { inputValue, multiSelectValue } from "./InputHelper";
 import { Modal } from "./Modal";
 import { SelectOptionsHelper } from "./SelectOptionsHelper";
 import { Sidebar } from "./Sidebar";
@@ -101,6 +101,8 @@ export class RenderCalender {
 					parentTask: inputValue("parentTask") ?? "",
 					completion: inputValue("completion") ?? "",
 					uid: this.generateRandomId(),
+					successors: multiSelectValue("successor") ?? [],
+					predecessors: multiSelectValue("predecessors") ?? [],
 				};
 
 				if (this._validate(task)) {

@@ -1,7 +1,6 @@
+
 import { InputTypes } from "../../types/Inputs/InputTypes";
 import { createElement } from "./HtmlHelper";
-import { doc } from "prettier";
-import label = doc.builders.label;
 
 export class InputHelper {
 	private readonly input: InputTypes;
@@ -134,4 +133,14 @@ export function inputValue(name: string): string | null {
 	const nameInput = document.querySelector(`[name='${name}']`) as HTMLInputElement | undefined;
 
 	return nameInput ? nameInput.value : null;
+}
+export function multiSelectValue(name: string): string[] | null {
+	const nameInput = document.querySelector(`[name='${name}']`) as HTMLSelectElement | undefined;
+	if (nameInput) {
+		const options = Array.from(nameInput.selectedOptions);
+
+		return options.map((option) => option.value);
+	}
+
+	return null;
 }
