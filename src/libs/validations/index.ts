@@ -25,6 +25,21 @@ export class Validations {
 		}
 	}
 
+	// public date(key: string, compare:string="",operator:string=""): void {
+    //     const value = this.task[key];
+    //     if (!value || !this._isValidDate(<string>value)) {
+	// 		this._addError(key, `the ${key} field must be valid date format`);
+	// 	}
+    // }
+
+	// public end(key: string, endDate: Date): void {
+    //     const value = this.task[key];
+    //     if (!value || value.length <= 0) {
+    //         this._addError(key, `the ${key} field must have a value`);
+    //     }
+	// }
+
+
 	public errors(): Errors[] {
 		return this._errors;
 	}
@@ -60,5 +75,17 @@ export class Validations {
 		} else if (errorIndex >= 0) {
 			this._errors[errorIndex].messages.push(message);
 		}
+	}
+	private _isValidDate(dateString: string): boolean {
+		const dateRegex = /^\d{4}-\d{2}-\d{2}$/; // Regular expression for YYYY-MM-DD format
+	
+		if (!dateRegex.test(dateString)) {
+			return false; // If the string doesn't match the expected format, return false
+		}
+	
+		const date = new Date(dateString);
+		const isValid = !isNaN(date.getTime()); // Check if the parsed date is valid
+	
+		return isValid;
 	}
 }

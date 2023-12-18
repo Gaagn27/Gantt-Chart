@@ -216,7 +216,7 @@ renderCalendar({
 				type: "date",
 				label: "Project Start Date",
 				class: "Project",
-				validations: ["required"],
+				validations: ["required","date:end,<"],
 			},
 			{
 				name: "end",
