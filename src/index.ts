@@ -65,6 +65,8 @@ function renderCalendar(configs: ChartConfigs): void {
 		.filter((task) => task.uid)
 		.map((task) => ({ label: task.name, value: task.uid }));
 	new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
+	new SelectOptionsHelper(inputs).setTasksInputs("successor", taskOptions);
+	new SelectOptionsHelper(inputs).setTasksInputs("predecessor", taskOptions);
 	Modal.renderModal(configs.modalConfigs);
 	const addTask = document.getElementById("addTask");
 	if (addTask) {
@@ -138,6 +140,8 @@ function renderCalendar(configs: ChartConfigs): void {
 					.filter((task) => task.uid)
 					.map((task) => ({ label: task.name, value: task.uid }));
 				new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
+				new SelectOptionsHelper(inputs).setTasksInputs("successor", taskOptions);
+				new SelectOptionsHelper(inputs).setTasksInputs("predecessor", taskOptions);
 				const form = document.querySelector("form#taskForm") as HTMLFormElement;
 				form.reset();
 				if (mainBox) {

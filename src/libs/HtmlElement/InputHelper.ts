@@ -1,5 +1,7 @@
 import { InputTypes } from "../../types/Inputs/InputTypes";
 import { createElement } from "./HtmlHelper";
+import { doc } from "prettier";
+import label = doc.builders.label;
 
 export class InputHelper {
 	private readonly input: InputTypes;
@@ -52,7 +54,12 @@ export class InputHelper {
 		if (this.input.type === "select") {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			this.input.options.unshift({ label: "Please select Task", value: "" });
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			if (!this.input.options.find((option) => option.label === "Please select")) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				this.input.options.unshift({ label: "Please select", value: "" });
+			}
 			this.input.options.forEach((option) => {
 				const optionEL = document.createElement("option");
 				if (typeof option === "string") {
