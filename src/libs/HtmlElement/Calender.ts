@@ -5,6 +5,7 @@ import { Task } from "../Task";
 import { BoxMover } from "./BoxMover";
 import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
+import { TaskSelect } from "./Select/TaskSelect";
 
 export class Calender extends GanttChart {
 	public renderDayHeaders(): void {
@@ -130,7 +131,10 @@ export class Calender extends GanttChart {
 		taskBox.style.width = `${width}px`;
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
-		midBox.addEventListener("click", () => new Task().edit(task));
+		midBox.addEventListener("click", () => {
+			new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor(<string>task.parentTask);
+			new Task().edit(task);
+		});
 		row.appendChild(taskBox);
 
 		return row;

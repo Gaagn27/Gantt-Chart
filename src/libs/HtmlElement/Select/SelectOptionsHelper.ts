@@ -1,9 +1,9 @@
-import { InputTypes } from "../../types/Inputs/InputTypes";
-import { InputHelper } from "./InputHelper";
+import { InputTypes } from "../../../types/Inputs/InputTypes";
+import { InputHelper } from "../InputHelper";
 
 export class SelectOptionsHelper {
 	private readonly _inputs: InputTypes[];
-	constructor(inputs: InputTypes[]) {
+	constructor(inputs: InputTypes[] = []) {
 		this._inputs = inputs;
 	}
 

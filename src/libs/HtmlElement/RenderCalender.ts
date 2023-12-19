@@ -1,14 +1,14 @@
 import { ChartConfigs } from "../../interfaces/ChartConfigs";
 import { SubTask } from "../../interfaces/task/SubTask";
 import { Task } from "../../interfaces/task/Task";
+import { InputTypes } from "../../types/Inputs/InputTypes";
 import { Validations } from "../validations";
 import { Calender } from "./Calender";
 import { createElement, removeElements } from "./HtmlHelper";
 import { inputValue, multiSelectValue } from "./InputHelper";
 import { Modal } from "./Modal";
-import { SelectOptionsHelper } from "./SelectOptionsHelper";
 import { Sidebar } from "./Sidebar";
-import { InputTypes } from "../../types/Inputs/InputTypes";
+import { TaskSelect } from "./Select/TaskSelect";
 
 export class RenderCalender {
 	private readonly _configs: ChartConfigs;
@@ -56,11 +56,11 @@ export class RenderCalender {
 		container.appendChild(mainBox);
 		mainBox.id = "mainBox";
 		// Render row with day numbers
-		this._calendar = new Calender(mainBox, this._tasks);
-		this._sidebar = new Sidebar(sideBarEl, this._tasks);
+		this._calendar = new Calender(mainBox, this._tasks, this._inputs);
+		this._sidebar = new Sidebar(sideBarEl, this._tasks, this._inputs);
 		this._calendar.renderCalender();
 		this._sidebar.renderTasksSidebar();
-		this._setTaskOptions();
+		new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor();
 		Modal.renderModal(this._configs.modalConfigs);
 		this._addTask();
 		const parentTaskSelect = document.querySelector(
@@ -68,34 +68,8 @@ export class RenderCalender {
 		) as HTMLSelectElement;
 		parentTaskSelect.addEventListener("change", (event) => {
 			const parentTask = (event.target as HTMLSelectElement).value;
-			if (parentTask) {
-				const parentObj = this._tasks.find((task) => task.uid === parentTask);
-				if (parentObj && parentObj.subTasks) {
-					this._setPredecessorSuccessor(
-						parentObj.subTasks
-							.filter((task) => task.uid)
-							.map((task) => ({ label: task.name, value: task.uid }))
-					);
-				} else {
-					this._setPredecessorSuccessor([]);
-				}
-			} else {
-				this._setTaskOptions();
-			}
+			new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor(parentTask);
 		});
-	}
-
-	private _setTaskOptions() {
-		const taskOptions = this._tasks
-			.filter((task) => task.uid)
-			.map((task) => ({ label: task.name, value: task.uid }));
-		new SelectOptionsHelper(this._inputs).setTasksInputs("parentTask", taskOptions);
-		this._setPredecessorSuccessor(taskOptions);
-	}
-
-	private _setPredecessorSuccessor(tasks: { label: string; value: string | undefined }[]) {
-		new SelectOptionsHelper(this._inputs).setTasksInputs("successor", tasks);
-		new SelectOptionsHelper(this._inputs).setTasksInputs("predecessor", tasks);
 	}
 
 	private _validate(task: Task): boolean {
@@ -174,7 +148,7 @@ export class RenderCalender {
 					}
 
 					Modal.closeModal();
-					this._setTaskOptions();
+					new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor();
 					const form = document.querySelector("form#taskForm") as HTMLFormElement;
 					form.reset();
 					if (this._configs.modalConfigs.addTask) {
