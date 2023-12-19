@@ -8,14 +8,17 @@ import { inputValue, multiSelectValue } from "./InputHelper";
 import { Modal } from "./Modal";
 import { SelectOptionsHelper } from "./SelectOptionsHelper";
 import { Sidebar } from "./Sidebar";
+import { InputTypes } from "../../types/Inputs/InputTypes";
 
 export class RenderCalender {
 	private readonly _configs: ChartConfigs;
 	private _calendar: Calender | undefined;
 	private _sidebar: Sidebar | undefined;
 	private _tasks: Task[] = [];
+	private readonly _inputs: InputTypes[] = [];
 	constructor(config: ChartConfigs) {
 		this._configs = config;
+		this._inputs = this._configs.modalConfigs.inputs;
 	}
 
 	public generateRandomId(length = 16): string {
@@ -60,17 +63,39 @@ export class RenderCalender {
 		this._setTaskOptions();
 		Modal.renderModal(this._configs.modalConfigs);
 		this._addTask();
+		const parentTaskSelect = document.querySelector(
+			"select[name='parentTask']"
+		) as HTMLSelectElement;
+		parentTaskSelect.addEventListener("change", (event) => {
+			const parentTask = (event.target as HTMLSelectElement).value;
+			if (parentTask) {
+				const parentObj = this._tasks.find((task) => task.uid === parentTask);
+				if (parentObj && parentObj.subTasks) {
+					this._setPredecessorSuccessor(
+						parentObj.subTasks
+							.filter((task) => task.uid)
+							.map((task) => ({ label: task.name, value: task.uid }))
+					);
+				} else {
+					this._setPredecessorSuccessor([]);
+				}
+			} else {
+				this._setTaskOptions();
+			}
+		});
 	}
 
 	private _setTaskOptions() {
-		const inputs = this._configs.modalConfigs.inputs;
-
 		const taskOptions = this._tasks
 			.filter((task) => task.uid)
 			.map((task) => ({ label: task.name, value: task.uid }));
-		new SelectOptionsHelper(inputs).setTasksInputs("parentTask", taskOptions);
-		new SelectOptionsHelper(inputs).setTasksInputs("successor", taskOptions);
-		new SelectOptionsHelper(inputs).setTasksInputs("predecessor", taskOptions);
+		new SelectOptionsHelper(this._inputs).setTasksInputs("parentTask", taskOptions);
+		this._setPredecessorSuccessor(taskOptions);
+	}
+
+	private _setPredecessorSuccessor(tasks: { label: string; value: string | undefined }[]) {
+		new SelectOptionsHelper(this._inputs).setTasksInputs("successor", tasks);
+		new SelectOptionsHelper(this._inputs).setTasksInputs("predecessor", tasks);
 	}
 
 	private _validate(task: Task): boolean {
@@ -102,9 +127,8 @@ export class RenderCalender {
 					completion: inputValue("completion") ?? "",
 					uid: this.generateRandomId(),
 					successors: multiSelectValue("successor") ?? [],
-					predecessors: multiSelectValue("predecessors") ?? [],
+					predecessors: multiSelectValue("predecessor") ?? [],
 				};
-
 				if (this._validate(task)) {
 					removeElements(document.querySelectorAll(".task-row"));
 					const uid = document.querySelector("input[name='_uid']") as HTMLInputElement | undefined;
