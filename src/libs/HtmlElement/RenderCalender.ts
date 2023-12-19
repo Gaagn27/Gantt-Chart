@@ -41,6 +41,13 @@ export class RenderCalender {
 		}
 		this._configs.tasks.map((task) => {
 			task.uid = task.uid ?? this.generateRandomId();
+			if (task.subTasks) {
+				task.subTasks = task.subTasks.map((task) => {
+					task.uid = task.uid ?? this.generateRandomId();
+
+					return task;
+				});
+			}
 
 			return task;
 		});

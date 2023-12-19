@@ -3,16 +3,6 @@ import "../src/sass/main.scss";
 import { Task } from "./interfaces/task/Task";
 import { RenderCalender } from "./libs/HtmlElement/RenderCalender";
 
-// eslint-disable-next-line no-use-before-define
-function isTaskDay(date: Date, tasks: Task[]): boolean {
-	return tasks.some((task) => {
-		const taskStart = new Date(task.start);
-		const taskEnd = new Date(task.end);
-
-		return date >= taskStart && date <= taskEnd;
-	});
-}
-
 // Get the current date
 const currentDate = new Date();
 
@@ -38,7 +28,6 @@ const tasks = [
 				start: "2023-12-03",
 				end: "2023-12-08",
 				parentTask: "rsa",
-				uid: "qee",
 				completion: 20,
 			},
 			{
@@ -46,7 +35,6 @@ const tasks = [
 				start: "2023-12-04",
 				end: "2023-12-08",
 				parentTask: "rsa",
-				uid: "qee",
 				completion: 30,
 			},
 			{
@@ -54,7 +42,6 @@ const tasks = [
 				start: "2023-12-13",
 				end: "2023-12-18",
 				parentTask: "rsa",
-				uid: "qee",
 				completion: 10,
 			},
 		],
