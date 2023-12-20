@@ -1,3 +1,5 @@
+import { ObjectWithChildren } from "../../interfaces/object/ObjectWithChildren";
+
 export class Data {
 	public findObj<T, K>(obj: T, dataKey: string, dataValue: string | number | boolean): K | false {
 		for (const key in obj) {
@@ -17,5 +19,22 @@ export class Data {
 		}
 
 		return false;
+	}
+
+	public findSiblings<T extends ObjectWithChildren>(
+		objs: T[],
+		childKey: string,
+		key: string,
+		value: string | false = false
+	): T[] {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const parent = objs.find((obj) => obj[key] === value);
+
+		if (parent && childKey in parent) {
+			return parent[childKey] as T[];
+		}
+
+		return objs;
 	}
 }
