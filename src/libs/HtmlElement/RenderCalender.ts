@@ -7,8 +7,8 @@ import { Calender } from "./Calender";
 import { createElement, removeElements } from "./HtmlHelper";
 import { inputValue, multiSelectValue } from "./InputHelper";
 import { Modal } from "./Modal";
-import { Sidebar } from "./Sidebar";
 import { TaskSelect } from "./Select/TaskSelect";
+import { Sidebar } from "./Sidebar";
 
 export class RenderCalender {
 	private readonly _configs: ChartConfigs;
