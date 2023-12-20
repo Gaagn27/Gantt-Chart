@@ -239,7 +239,7 @@ renderCalendar({
 				type: "date",
 				label: "Project End Date",
 				class: "Project",
-				validations: ["required"],
+				validations: ["required","date:start,>"],
 			},
 			{
 				name: "completion",
@@ -251,13 +251,14 @@ renderCalendar({
 				validations: ["required"],
 			},
 			{
-				name: "parentTask",
+				name: "Select any dropdown name",
 				type: "select",
 				options: [
 					{ label: "test", value: "test" },
 					{ label: "disable", value: "disabled", disabled: true },
 				],
 				label: "Tasks",
+				validations: ["required"]
 			},
 		],
 	},

@@ -2,6 +2,7 @@ import { SubTask } from "../../interfaces/task/SubTask";
 import { Task } from "../../interfaces/task/Task";
 import { Errors } from "../../interfaces/validtions/Errors";
 import { InputTypes } from "../../types/Inputs/InputTypes";
+import { inputValue } from "../HtmlElement/InputHelper";
 
 export class Validations {
 	private readonly _errors: Errors[] = [];
@@ -25,12 +26,55 @@ export class Validations {
 		}
 	}
 
-	// public date(key: string, compare:string="",operator:string=""): void {
-    //     const value = this.task[key];
-    //     if (!value || !this._isValidDate(<string>value)) {
-	// 		this._addError(key, `the ${key} field must be valid date format`);
-	// 	}
-    // }
+	public date(key: string, compare:string="",operator:string=""): void {
+        const value = this.task[key];
+        if (!value || !this._isValidDate(<string>value)) {
+			this._addError(key, `the ${key} field must be valid date format`);
+			return;
+		}
+		console.log(compare,value,operator)
+		const compareDateString=this.task[compare]
+		if (compareDateString && operator) {
+			const inputDate = new Date(<string>value);
+			const compareDate = new Date(<string>compareDateString);
+			console.log(compareDateString,inputDate,compareDate)
+		
+			 if (operator === '>'){
+				if (!(inputDate > compareDate)){
+					this._addError(key, `the ${key} project date must be after`)
+				}
+			}
+			switch (operator) {
+				case '<':
+					if (!(inputDate< compareDate)) {
+						this._addError(key,`the ${key} project date is less than`)
+					}
+					break;
+				case '>':
+					if (!(inputDate< compareDate)) {
+						this._addError(key,`the ${key} project date is greater than`)
+					}
+					break;
+				case '<=':
+					if (!(inputDate< compareDate)) {
+						this._addError(key,`the ${key} project date is less than or equal to`)
+					}
+					break;
+				case '>=':
+					if (!(inputDate< compareDate)) {
+						this._addError(key,`the ${key} project date is greater than or equal to`)
+					}
+					break;
+				case '===':
+					if (!(inputDate< compareDate)) {
+						this._addError(key,`the ${key} project date must exact`)
+					}				
+					break;
+					
+			}
+		}
+	
+    }
 
 	// public end(key: string, endDate: Date): void {
     //     const value = this.task[key];
