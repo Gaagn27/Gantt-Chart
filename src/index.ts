@@ -251,14 +251,13 @@ renderCalendar({
 				validations: ["required"],
 			},
 			{
-				name: "Select any dropdown name",
+				name: "parentTask",
 				type: "select",
 				options: [
 					{ label: "test", value: "test" },
 					{ label: "disable", value: "disabled", disabled: true },
 				],
 				label: "Tasks",
-				validations: ["required"]
 			},
 		],
 	},
