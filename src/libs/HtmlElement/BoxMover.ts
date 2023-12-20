@@ -1,6 +1,7 @@
+import { SubTask } from "../../interfaces/task/SubTask";
 import { Task } from "../../interfaces/task/Task";
 import { Data } from "../Data";
-import { getDateRange } from "../Date/Date";
+import { DateHelper, getDateRange } from "../Date/Date";
 
 export class BoxMover {
 	private _tasks: Task[];
@@ -51,14 +52,16 @@ export class BoxMover {
 		initialLeft: number
 	): number {
 		if (this.isMouseDown && initialLeft && this.box && this.startMove) {
-			const xCoordinate = e.clientX;
-			const calculatedLeft = initialLeft - (initialClientX - xCoordinate);
-			const calculatedWidth = initialWidth + (initialClientX - xCoordinate);
-			this.box.style.left = `${calculatedLeft}px`;
-			this.box.style.width = `${calculatedWidth}px`;
-			this.isMouseMove = true;
+			if (this.box.dataset.uid) {
+				const xCoordinate = e.clientX;
+				const calculatedLeft = initialLeft - (initialClientX - xCoordinate);
+				const calculatedWidth = initialWidth + (initialClientX - xCoordinate);
+				this.box.style.left = `${calculatedLeft}px`;
+				this.box.style.width = `${calculatedWidth}px`;
+				this.isMouseMove = true;
 
-			return calculatedLeft;
+				return calculatedLeft;
+			}
 		}
 
 		return 0;
@@ -85,9 +88,38 @@ export class BoxMover {
 			const boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
 			this.startMove = true;
-			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
-				this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft)
-			);
+			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
+				if (this.box && this.box.dataset.uid) {
+					const currentTask = new Data().findObj<Task[] | SubTask[], Task | SubTask>(
+						this._tasks,
+						"uid",
+						this.box.dataset.uid
+					);
+					if (currentTask && currentTask.successors) {
+						const parentKey: string | undefined = <string>currentTask.parentTask;
+						const siblings = new Data().findSiblings<Task | SubTask>(
+							this._tasks,
+							"subTasks",
+							"uid",
+							parentKey
+						);
+						const successorsKeys = <string[]>currentTask.successors;
+						const successors = siblings.filter((task) => successorsKeys.includes(<string>task.uid));
+						const latestDate = new DateHelper(successors.map((task) => task.end)).latestDate();
+						if (latestDate) {
+							const latestDateEl = document.getElementById(String(latestDate.getTime()));
+							if (latestDateEl) {
+								const clientX = latestDateEl.getBoundingClientRect().right;
+								if (clientX < e.clientX) {
+									this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft);
+								}
+							}
+						}
+					} else {
+						this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft);
+					}
+				}
+			});
 		}
 	}
 
@@ -148,7 +180,11 @@ export class BoxMover {
 	private adjustStartDate(clickedEl: HTMLElement): void {
 		const dayWidth = this.dayWidth();
 		const otherBox = clickedEl.parentNode as HTMLElement;
-		const startDate = new Data().findObj<Task[]>(this._tasks, "uid", <string>otherBox.dataset.uid);
+		const startDate = new Data().findObj<Task[], Task>(
+			this._tasks,
+			"uid",
+			<string>otherBox.dataset.uid
+		);
 		const currentStart = startDate ? new Date(startDate.start) : false;
 		if (currentStart) {
 			const otherBoxWidth = otherBox.offsetWidth;
