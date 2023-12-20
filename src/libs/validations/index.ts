@@ -2,6 +2,7 @@ import { SubTask } from "../../interfaces/task/SubTask";
 import { Task } from "../../interfaces/task/Task";
 import { Errors } from "../../interfaces/validtions/Errors";
 import { InputTypes } from "../../types/Inputs/InputTypes";
+import { inputValue } from "../HtmlElement/InputHelper";
 
 export class Validations {
 	private readonly _errors: Errors[] = [];
@@ -24,6 +25,59 @@ export class Validations {
 			this._addError(key, `the ${key} field must be at least ${length}`);
 		}
 	}
+
+	public date(key: string, compare:string="",operator:string=""): void {
+        const value = this.task[key];
+        if (!value || !this._isValidDate(<string>value)) {
+			this._addError(key, `the ${key} field must be valid date format`);
+			return;
+		}
+		console.log(compare,value,operator)
+		const compareDateString=this.task[compare]
+		if (compareDateString && operator) {
+			const inputDate = new Date(<string>value);
+			const compareDate = new Date(<string>compareDateString);
+		
+		
+			switch (operator) {
+				case '<':
+					if (!(inputDate< compareDate)) {
+						this._addError(key,`the ${key} project date is less than`)
+					}
+					break;
+				case '>':
+					if (!(inputDate > compareDate)) {
+						this._addError(key,`the ${key} project date is greater than`)
+					}
+					break;
+				case '<=':
+					if (!(inputDate <= compareDate)) {
+						this._addError(key,`the ${key} project date is less than or equal to`)
+					}
+					break;
+				case '>=':
+					if (!(inputDate >= compareDate)) {
+						this._addError(key,`the ${key} project date is greater than or equal to`)
+					}
+					break;
+				case '===':
+					if (!(inputDate === compareDate)) {
+						this._addError(key,`the ${key} project date must exact`)
+					}				
+					break;
+					
+			}
+		}
+	
+    }
+
+	// public end(key: string, endDate: Date): void {
+    //     const value = this.task[key];
+    //     if (!value || value.length <= 0) {
+    //         this._addError(key, `the ${key} field must have a value`);
+    //     }
+	// }
+
 
 	public errors(): Errors[] {
 		return this._errors;
@@ -60,5 +114,17 @@ export class Validations {
 		} else if (errorIndex >= 0) {
 			this._errors[errorIndex].messages.push(message);
 		}
+	}
+	private _isValidDate(dateString: string): boolean {
+		const dateRegex = /^\d{4}-\d{2}-\d{2}$/; // Regular expression for YYYY-MM-DD format
+	
+		if (!dateRegex.test(dateString)) {
+			return false; // If the string doesn't match the expected format, return false
+		}
+	
+		const date = new Date(dateString);
+		const isValid = !isNaN(date.getTime()); // Check if the parsed date is valid
+	
+		return isValid;
 	}
 }

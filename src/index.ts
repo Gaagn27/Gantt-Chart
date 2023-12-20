@@ -232,14 +232,14 @@ renderCalendar({
 				type: "date",
 				label: "Project Start Date",
 				class: "Project",
-				validations: ["required"],
+				validations: ["required","date:end,<"],
 			},
 			{
 				name: "end",
 				type: "date",
 				label: "Project End Date",
 				class: "Project",
-				validations: ["required"],
+				validations: ["required","date:start,>"],
 			},
 			{
 				name: "completion",
