@@ -37,13 +37,8 @@ export class Validations {
 		if (compareDateString && operator) {
 			const inputDate = new Date(<string>value);
 			const compareDate = new Date(<string>compareDateString);
-			console.log(compareDateString,inputDate,compareDate)
 		
-			 if (operator === '>'){
-				if (!(inputDate > compareDate)){
-					this._addError(key, `the ${key} project date must be after`)
-				}
-			}
+		
 			switch (operator) {
 				case '<':
 					if (!(inputDate< compareDate)) {
@@ -51,22 +46,22 @@ export class Validations {
 					}
 					break;
 				case '>':
-					if (!(inputDate< compareDate)) {
+					if (!(inputDate > compareDate)) {
 						this._addError(key,`the ${key} project date is greater than`)
 					}
 					break;
 				case '<=':
-					if (!(inputDate< compareDate)) {
+					if (!(inputDate <= compareDate)) {
 						this._addError(key,`the ${key} project date is less than or equal to`)
 					}
 					break;
 				case '>=':
-					if (!(inputDate< compareDate)) {
+					if (!(inputDate >= compareDate)) {
 						this._addError(key,`the ${key} project date is greater than or equal to`)
 					}
 					break;
 				case '===':
-					if (!(inputDate< compareDate)) {
+					if (!(inputDate === compareDate)) {
 						this._addError(key,`the ${key} project date must exact`)
 					}				
 					break;
