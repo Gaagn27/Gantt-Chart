@@ -19,3 +19,9 @@ export function getElementFullWidth(element: HTMLElement): number {
 		parseFloat(computedStyle.width)
 	);
 }
+
+export function removeElements(elements: NodeListOf<HTMLElement>): void {
+	elements.forEach((element) => {
+		element.remove();
+	});
+}

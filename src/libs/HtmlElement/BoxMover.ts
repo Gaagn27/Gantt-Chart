@@ -1,6 +1,7 @@
+import { SubTask } from "../../interfaces/task/SubTask";
 import { Task } from "../../interfaces/task/Task";
 import { Data } from "../Data";
-import { getDateRange } from "../Date/Date";
+import { DateHelper, getDateRange } from "../Date/Date";
 
 export class BoxMover {
 	private _tasks: Task[];
@@ -51,14 +52,16 @@ export class BoxMover {
 		initialLeft: number
 	): number {
 		if (this.isMouseDown && initialLeft && this.box && this.startMove) {
-			const xCoordinate = e.clientX;
-			const calculatedLeft = initialLeft - (initialClientX - xCoordinate);
-			const calculatedWidth = initialWidth + (initialClientX - xCoordinate);
-			this.box.style.left = `${calculatedLeft}px`;
-			this.box.style.width = `${calculatedWidth}px`;
-			this.isMouseMove = true;
+			if (this.box.dataset.uid) {
+				const xCoordinate = e.clientX;
+				const calculatedLeft = initialLeft - (initialClientX - xCoordinate);
+				const calculatedWidth = initialWidth + (initialClientX - xCoordinate);
+				this.box.style.left = `${calculatedLeft}px`;
+				this.box.style.width = `${calculatedWidth}px`;
+				this.isMouseMove = true;
 
-			return calculatedLeft;
+				return calculatedLeft;
+			}
 		}
 
 		return 0;
@@ -73,9 +76,11 @@ export class BoxMover {
 
 			this.boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
-			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
-				this.modifiedWidth(e, this.boxClientX, this.boxWidth)
-			);
+			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
+				if (this.box && this.box.dataset.uid) {
+					this.modifiedWidth(e, this.boxClientX, this.boxWidth);
+				}
+			});
 		}
 		if (this.clickedEl.classList.contains("start-date-mod")) {
 			this.isMouseDown = true;
@@ -85,10 +90,41 @@ export class BoxMover {
 			const boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
 			this.startMove = true;
-			this.mainBox.addEventListener("mousemove", (e: MouseEvent) =>
-				this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft)
-			);
+			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
+				if (this.box && this.box.dataset.uid) {
+					const currentTask = new Data().findObj<Task[] | SubTask[], Task | SubTask>(
+						this._tasks,
+						"uid",
+						this.box.dataset.uid
+					);
+					if (currentTask && currentTask.predecessors) {
+						const siblings: (Task | SubTask)[] = this.siblingTasks(currentTask);
+						const predecessorsKeys = <string[]>currentTask.predecessors;
+						const predecessors = siblings.filter((task) =>
+							predecessorsKeys.includes(<string>task.uid)
+						);
+						const latestDate = new DateHelper(predecessors.map((task) => task.end)).latestDate();
+						if (latestDate) {
+							const latestDateEl = document.getElementById(String(latestDate.getTime()));
+							if (latestDateEl) {
+								const clientX = latestDateEl.getBoundingClientRect().right;
+								if (clientX < e.clientX) {
+									this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft);
+								}
+							}
+						}
+					} else {
+						this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft);
+					}
+				}
+			});
 		}
+	}
+
+	private siblingTasks(currentTask: Task | SubTask): (Task | SubTask)[] {
+		const parentKey: string | undefined = <string>currentTask.parentTask;
+
+		return new Data().findSiblings<Task | SubTask>(this._tasks, "subTasks", "uid", parentKey);
 	}
 
 	private mouseUp(event: MouseEvent): void {
@@ -115,6 +151,7 @@ export class BoxMover {
 		this.isMouseMove = false;
 	}
 
+	// @ts-ignore
 	private adjustBox(clickedEl: HTMLElement): void {
 		const dayWidth = this.dayWidth();
 		const { start } = getDateRange(this._tasks);
@@ -136,7 +173,53 @@ export class BoxMover {
 		currentStart.setDate(
 			currentStart.getDate() + (Math.round((otherBoxWidth + otherBoxLeft) / dayWidth) - 1)
 		);
+		function addDays(date: Date, days: number): Date {
+			const result = new Date(date);
+			result.setDate(result.getDate() + days);
+
+			return result;
+		}
 		this._tasks = this._tasks.map((task) => {
+			if (task.subTasks) {
+				task.subTasks = task.subTasks.map((task) => {
+					// const
+					if (task.uid === otherBox.dataset.uid) {
+						task.end = currentStart.toISOString().split("T")[0];
+					}
+					if (this.box && this.box.dataset.uid) {
+						const currentTask = new Data().findObj<Task[] | SubTask[], Task | SubTask>(
+							this._tasks,
+							"uid",
+							this.box.dataset.uid
+						);
+						if (currentTask && currentTask.successors) {
+							const successors = currentTask.successors as string[];
+							if (successors.includes(<string>task.uid)) {
+								const startDate = new Date(task.start);
+
+								const difference = currentStart.getTime() - startDate.getTime();
+
+								const differenceInDays = Math.round(difference / (1000 * 60 * 60 * 24));
+
+								if (differenceInDays > 0) {
+									task.start = addDays(startDate, differenceInDays).toISOString().split("T")[0];
+									task.end = addDays(new Date(task.end), differenceInDays)
+										.toISOString()
+										.split("T")[0];
+									const taskBox = document.querySelector(
+										`[class="task-box"][data-uid="${<string>task.uid}"]`
+									) as HTMLElement | undefined;
+									if (taskBox) {
+										taskBox.style.left = `${otherBox.offsetLeft + otherBox.offsetWidth}px`;
+									}
+								}
+							}
+						}
+					}
+
+					return task;
+				});
+			}
 			if (task.uid === otherBox.dataset.uid) {
 				task.end = currentStart.toISOString().split("T")[0];
 			}
@@ -148,7 +231,11 @@ export class BoxMover {
 	private adjustStartDate(clickedEl: HTMLElement): void {
 		const dayWidth = this.dayWidth();
 		const otherBox = clickedEl.parentNode as HTMLElement;
-		const startDate = new Data().findObj<Task[]>(this._tasks, "uid", <string>otherBox.dataset.uid);
+		const startDate = new Data().findObj<Task[], Task>(
+			this._tasks,
+			"uid",
+			<string>otherBox.dataset.uid
+		);
 		const currentStart = startDate ? new Date(startDate.start) : false;
 		if (currentStart) {
 			const otherBoxWidth = otherBox.offsetWidth;

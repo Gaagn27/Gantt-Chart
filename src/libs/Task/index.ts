@@ -17,10 +17,11 @@ export class Task {
 		uidEl.setAttribute("type", "hidden");
 		form.appendChild(uidEl);
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		const taskOptionEl = document.querySelector(`option[value=${task.uid}]`);
-		if (taskOptionEl) {
-			taskOptionEl.setAttribute("disabled", "true");
-		}
+		// const taskOptionEl = document.querySelector(`option[value=${task.uid}]`);
+		// if (taskOptionEl) {
+		// 	taskOptionEl.setAttribute("disabled", "true");
+		// }
+
 		for (const taskKey in task) {
 			const input = form.elements.namedItem(taskKey);
 			if (input && (typeof task[taskKey] === "string" || typeof task[taskKey] === "number")) {

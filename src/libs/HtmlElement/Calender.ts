@@ -5,8 +5,10 @@ import { Task } from "../Task";
 import { BoxMover } from "./BoxMover";
 import { GanttChart } from "./GanttChart";
 import { createElement, getElementFullWidth } from "./HtmlHelper";
+import { TaskSelect } from "./Select/TaskSelect";
 
 export class Calender extends GanttChart {
+	private _originalMainBoxWidth = 0;
 	public renderDayHeaders(): void {
 		const row = createElement("div", "row");
 		const { start, end } = getDateRange(this._tasks);
@@ -90,7 +92,7 @@ export class Calender extends GanttChart {
 		const taskBox = createElement("div", "task-box", "");
 		const progressEl = createElement("div", "progress");
 		if (task.uid) {
-			taskBox.setAttribute("data-uid", <string>task.uid);
+			taskBox.setAttribute("data-uid", task.uid);
 			taskBox.appendChild(progressEl);
 			progressEl.style.width = `${task.completion}%`;
 		}
@@ -111,7 +113,10 @@ export class Calender extends GanttChart {
 		if (isSubTask) {
 			taskBox.classList.add("sub-task-row");
 		}
-		row.style.width = `${String(getElementFullWidth(this._container))}px`;
+		if (!this._originalMainBoxWidth) {
+			this._originalMainBoxWidth = this._container.scrollWidth - 10;
+		}
+		row.style.width = `${String(this._originalMainBoxWidth)}px`;
 		const tooltip = this._createTooltip(task);
 		taskBox.appendChild(tooltip);
 		taskBox.appendChild(startDateModifier);
@@ -130,7 +135,10 @@ export class Calender extends GanttChart {
 		taskBox.style.width = `${width}px`;
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		taskBox.style.top = `${document.getElementById(`task-side${task.name}`)?.offsetTop}px`;
-		midBox.addEventListener("click", () => new Task().edit(task));
+		midBox.addEventListener("click", () => {
+			new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor(<string>task.parentTask);
+			new Task().edit(task);
+		});
 		row.appendChild(taskBox);
 
 		return row;

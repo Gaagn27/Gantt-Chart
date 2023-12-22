@@ -4,6 +4,7 @@ import { Task } from "../Task";
 import { GanttChart } from "./GanttChart";
 import { createElement } from "./HtmlHelper";
 import { Modal } from "./Modal";
+import { TaskSelect } from "./Select/TaskSelect";
 
 export class Sidebar extends GanttChart {
 	public renderTasksSidebar(): void {
@@ -13,6 +14,8 @@ export class Sidebar extends GanttChart {
 		btn.addEventListener("click", () => {
 			const form = document.querySelector("form#taskForm") as HTMLFormElement;
 			form.reset();
+			const task = document.querySelector("[name='parentTask']") as HTMLSelectElement;
+			new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor(task.value);
 			Modal.openModal();
 		});
 
@@ -48,7 +51,10 @@ export class Sidebar extends GanttChart {
 			element.classList.add("sub-task-side");
 		}
 
-		element.addEventListener("click", () => new Task().edit(task));
+		element.addEventListener("click", () => {
+			new TaskSelect(this._inputs, this._tasks).updatePredecessorSuccessor(<string>task.parentTask);
+			new Task().edit(task);
+		});
 
 		return element;
 	}
