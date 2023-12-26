@@ -69,16 +69,19 @@ export class BoxMover {
 
 	private mouseDown(event: MouseEvent) {
 		this.clickedEl = event.target as HTMLElement;
-
+		const dayWidth = this.dayWidth();
 		if (this.clickedEl.classList.contains("end-date-mod")) {
 			this.isMouseDown = true;
 			this.box = this.clickedEl.parentNode as HTMLElement;
 
 			this.boxWidth = this.box.offsetWidth;
 			this.boxClientX = event.clientX;
+			const fixPosition = this.box.getBoundingClientRect().left;
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
 				if (this.box && this.box.dataset.uid) {
-					this.modifiedWidth(e, this.boxClientX, this.boxWidth);
+					if (fixPosition + dayWidth < e.clientX) {
+						this.modifiedWidth(e, this.boxClientX, this.boxWidth);
+					}
 				}
 			});
 		}
@@ -91,7 +94,7 @@ export class BoxMover {
 			this.boxClientX = event.clientX;
 			this.startMove = true;
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
-				if (this.box && this.box.dataset.uid) {
+				if (this.box && this.box.dataset.uid && this.box.offsetWidth >= dayWidth) {
 					const currentTask = new Data().findObj<Task[] | SubTask[], Task | SubTask>(
 						this._tasks,
 						"uid",
@@ -116,6 +119,8 @@ export class BoxMover {
 					} else {
 						this.modifiedWidthLeft(e, this.boxClientX, boxWidth, boxLeft);
 					}
+				} else if (this.box) {
+					this.box.style.left = `${this.box.offsetLeft - 1}px`;
 				}
 			});
 		}
