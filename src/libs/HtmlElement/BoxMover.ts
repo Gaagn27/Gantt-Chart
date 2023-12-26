@@ -69,6 +69,7 @@ export class BoxMover {
 
 	private mouseDown(event: MouseEvent) {
 		this.clickedEl = event.target as HTMLElement;
+		const dayWidth = this.dayWidth();
 
 		if (this.clickedEl.classList.contains("end-date-mod")) {
 			this.isMouseDown = true;
@@ -78,7 +79,10 @@ export class BoxMover {
 			this.boxClientX = event.clientX;
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
 				if (this.box && this.box.dataset.uid) {
-					this.modifiedWidth(e, this.boxClientX, this.boxWidth);
+					const fixPosition = this.box.getBoundingClientRect().left;
+					if (fixPosition + dayWidth < e.clientX) {
+						this.modifiedWidth(e, this.boxClientX, this.boxWidth);
+					}
 				}
 			});
 		}
@@ -92,6 +96,10 @@ export class BoxMover {
 			this.startMove = true;
 			this.mainBox.addEventListener("mousemove", (e: MouseEvent) => {
 				if (this.box && this.box.dataset.uid) {
+					const fixPosition = this.box.getBoundingClientRect().right;
+					if (!(fixPosition - dayWidth > e.clientX)) {
+						return;
+					}
 					const currentTask = new Data().findObj<Task[] | SubTask[], Task | SubTask>(
 						this._tasks,
 						"uid",
