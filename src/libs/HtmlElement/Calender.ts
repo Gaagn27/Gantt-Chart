@@ -125,9 +125,10 @@ export class Calender extends GanttChart {
 		taskBox.addEventListener("mouseover", (event: MouseEvent): void => {
 			tooltip.style.left = `${event.offsetX}px`;
 		});
-		const leftBox = document.getElementById(Date.parse(task.start).toString());
+		const leftBox = document.getElementById(Date.parse(`${task.start}z`).toString());
 		const leftCords = leftBox?.offsetLeft ?? 0;
-		const rightBox = document.getElementById(Date.parse(task.end).toString())?.offsetLeft ?? 0;
+		const rightBox =
+			document.getElementById(Date.parse(`${task.end}z`).toString())?.offsetLeft ?? 0;
 		const dayEl = document.querySelector("#dateHeader .day") as HTMLElement;
 
 		const width: number = rightBox - leftCords + dayEl.offsetWidth;
